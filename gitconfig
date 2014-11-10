@@ -1,0 +1,11 @@
+[user]
+	name = JP Flouret
+	email = jpflouret@gmail.com
+[push]
+	default = simple
+[alias]
+	co = checkout
+	ci = commit
+	st = status
+	d = diff
+	dt = difftool -y
