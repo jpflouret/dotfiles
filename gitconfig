@@ -9,3 +9,7 @@
 	st = status
 	d = diff
 	dt = difftool -y
+[merge]
+	tool = gvimdiff
+[diff]
+	tool = gvimdiff
