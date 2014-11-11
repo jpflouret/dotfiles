@@ -74,6 +74,8 @@ xterm*|rxvt*)
     ;;
 esac
 
+export NCURSES_NO_UTF8_ACS=1
+
 # gvim shortcut that uses remote vim when available
 g() {
   if [ -z "$(command vim --serverlist)" ]; then
