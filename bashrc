@@ -28,6 +28,7 @@ fi
 
 # set -o notify
 # set -o ignoreeof
+set -o vi
 shopt -s nocaseglob
 shopt -s histappend
 shopt -s cdspell
@@ -112,4 +113,17 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-set -o vi
+# run a tmux session
+if [ -x /usr/bin/tmux ]; then
+  if [ "$TERM" != "screen" ] && [ "$SSH_CONNECTION" == "" ]; then
+    # Attempt to discover a detached session and attach
+    # it, else create a new session
+
+    WHOAMI=$(whoami)
+    if tmux has-session -t $WHOAMI 2>/dev/null; then
+      exec tmux -2 attach-session -t $WHOAMI
+    else
+      exec tmux -2 new-session -s $WHOAMI
+    fi
+  fi
+fi
