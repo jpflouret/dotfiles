@@ -79,10 +79,14 @@ export NCURSES_NO_UTF8_ACS=1
 
 # gvim shortcut that uses remote vim when available
 g() {
-  if [ -z "$(command vim --serverlist)" ]; then
-    command gvim "$@"
+  if [ -z "$(which gvim)" ]; then
+    vim "$@"
   else
-    command gvim --remote-silent "$@" ;
+    if [ -z "$(command vim --serverlist)" ]; then
+      command gvim "$@"
+    else
+      command gvim --remote-silent "$@" ;
+    fi
   fi
 }
 
