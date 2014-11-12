@@ -1,0 +1,34 @@
+#!/bin/sh
+
+export -n TMP
+export -n TEMP
+export -n HISTCONTROL
+export -n HISTIGNORE
+export -n HOME
+export -n HOSTNAME
+export -n INFOPATH
+export -n LANG
+export -n MANPATH
+export -n PWD
+export -n SHELL
+export -n SHLVL
+export -n TERM
+export -n TZ
+export -n USER
+export -n _
+
+# Neds to be an abs path to the windows exe to prevent a
+# conflict with the cygwin version of vim (which I also use)
+VIMPATH=/programs32/Vim/vim74
+
+if [ "$1" = "--serverlist" ]; then
+  # use vim since gvim on windows uses a messagebox for the serverlist
+  $VIMPATH/vim.exe --serverlist
+else
+  ARGS=
+  if [ "$#" -gt 0 ]; then
+    ARGS=$(cygpath -ma -- $@)
+  fi
+  $VIMPATH/gvim.exe $ARGS >/dev/null 2>&1 &
+  disown
+fi
