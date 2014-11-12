@@ -86,7 +86,7 @@ g() {
   if [ -z "$(which gvim)" ]; then
     vim "$@"
   else
-    if [ -z "$(command vim --serverlist)" ]; then
+    if [ -z "$(command gvim --serverlist)" ]; then
       command gvim "$@"
     else
       command gvim --remote-silent "$@" ;
@@ -95,6 +95,7 @@ g() {
 }
 
 alias v=vim
+alias vi=vim
 
 # enable color support
 if [ -x /usr/bin/dircolors ]; then
