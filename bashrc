@@ -16,6 +16,9 @@ if [ $cygwin ]; then
   # Exporting PWD in cygwin usually breaks other programs
   # that use PWD but don't understand cygwin paths.
   export -n PWD
+
+  # Use native symbolic links and junctions when in cygwin
+  export CYGWIN=winsymlinks:nativestrict
 fi
 
 # Add user's bin folder
