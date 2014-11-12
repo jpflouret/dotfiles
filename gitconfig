@@ -12,6 +12,6 @@
 	d = diff
 	dt = difftool -y
 [merge]
-	tool = gvimdiff
+	tool = vimdiff
 [diff]
-	tool = gvimdiff
+	tool = vimdiff
