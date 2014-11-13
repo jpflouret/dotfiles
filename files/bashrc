@@ -125,8 +125,8 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 # run a tmux session
-if [ -x /usr/bin/tmux ]; then
-  if [ "$TERM" != "screen" ] && [ "$SSH_CONNECTION" == "" ]; then
+if [ ! -f $HOME/no_tmux -a -x /usr/bin/tmux ]; then
+  if [ "$TERM" != "screen" ] && [ "$TERM" != "cygwin" ] && [ "$SSH_CONNECTION" == "" ]; then
     # Attempt to discover a detached session and attach
     # it, else create a new session
 
