@@ -1,6 +1,6 @@
-umask 022
+#umask 022
 
-export LANG=`locale -uU`
+#export LANG=`locale -uU`
 
 # if running bash
 if [ -n "${BASH_VERSION}" ]; then
