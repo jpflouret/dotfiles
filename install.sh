@@ -53,7 +53,7 @@ if [ -d $DOTFILES/vimfiles ]; then
   fi
 fi
 
-for file in `find $DOTFILES -maxdepth 1 -type f \( -iname "*rc" -o -iname "*.conf" -o -iname "*profile" -o -iname "*config" \) -print`; do
+for file in $DOTFILES/files/*; do
   target=`basename $file`
   $LN $file $DST/.$target
 done

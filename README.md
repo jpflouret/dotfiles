@@ -6,7 +6,7 @@ Nothing to see here. Move along.
 
     cd ~
     git clone --recursive git@github.com:jpflouret/dotfiles.git
-    ./dotfiles/mklinks.sh -f
+    ./dotfiles/install.sh -f
 
 NOTE: Make sure the ssh keys for the machine are set in [GitHub](https://github.com/jpflouret)
 otherwise the clone of submodles will fail.
