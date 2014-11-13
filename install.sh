@@ -32,8 +32,8 @@ while getopts "h?f" opt; do
 done
 
 
-LN="ln -s"
-[ $force -eq 0 ] || LN="ln -sf"
+LN="ln -sT"
+[ $force -eq 0 ] || LN="ln -sfT"
 
 SYSNAME=`lowercase \`uname\``
 case "$SYSNAME" in
@@ -42,16 +42,6 @@ esac
 
 
 [ -d $DST ] || mkdir $DST
-
-# Special case for vimfiles since it is a whole dir
-if [ -d $DOTFILES/vimfiles ]; then
-  $LN -T $DOTFILES/vimfiles $DST/.vim
-  $LN -T .vim/vimrc $DST/.vimrc
-  # On cygwin also create vimfiles in the user profile dir
-  if [ $SYSNAME = "cygwin" ]; then
-    $LN -T $DOTFILES/vimfiles $(cygpath $USERPROFILE)/vimfiles
-  fi
-fi
 
 for file in $DOTFILES/files/*; do
   target=`basename $file`
@@ -69,6 +59,16 @@ if [ -d $DOTFILES/bin/$SYSNAME ]; then
     target=`basename $file`
     $LN $file $DST/bin/$target
   done
+fi
+
+# -- Special cases --
+
+# Vim: also link .vimrc ro .vim/vimrc for vim < 7.4
+[ -d $DST/.vim ] && $LN .vim/vimrc $DST/.vimrc
+
+# On cygwin also create vimfiles in the user profile dir
+if [ $SYSNAME = "cygwin" ]; then
+  $LN $DOTFILES/files/vim $(cygpath $USERPROFILE)/vimfiles
 fi
 
 # vim:ts=2:sw=2:et:tw=0:

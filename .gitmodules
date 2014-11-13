@@ -1,3 +1,3 @@
 [submodule "vimfiles"]
-	path = vimfiles
+	path = files/vim
 	url = git@github.com:jpflouret/vimfiles.git
