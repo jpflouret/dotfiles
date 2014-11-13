@@ -63,7 +63,7 @@ for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
   $LN $file $DST/bin/$target
 done
 
-if [ -d $DOTFILES/bin/$sysname ]; then
+if [ -d $DOTFILES/bin/$SYSNAME ]; then
   for file in `find $DOTFILES/bin/$SYSNAME -type f -print`; do
     target=`basename $file`
     $LN $file $DST/bin/$target
