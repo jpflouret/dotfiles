@@ -1,0 +1,6 @@
+
+# copy selection to system clipboard
+unbind y
+unbind Enter
+bind -t vi-copy y copy-pipe "cat | clip"
+bind -t vi-copy Enter copy-pipe "cat | clip"
