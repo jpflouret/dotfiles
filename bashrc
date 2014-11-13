@@ -75,7 +75,7 @@ PS1=${PS1}'\[\e[0m\] \$ '        # $
 
 # Set the xterm title
 case "$TERM" in
-xterm*|rxvt*)
+xterm*|rxvt*|screen)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
     ;;
 *)
