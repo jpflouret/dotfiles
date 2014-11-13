@@ -8,8 +8,5 @@ Nothing to see here. Move along.
     git clone --recursive git@github.com:jpflouret/dotfiles.git
     ./dotfiles/mklinks.sh -f
 
-or with https (if ssh key hasn't been set yet)
-
-    cd ~
-    git clone --recursive https://github.com/jpflouret/dotfiles.git
-    ./dotfiles/mklinks.sh -f
+NOTE: Make sure the ssh keys for the machine are set in [GitHub](https://github.com/jpflouret)
+otherwise the clone of submodles will fail.
