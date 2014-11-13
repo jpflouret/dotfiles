@@ -46,6 +46,7 @@ esac
 # Special case for vimfiles since it is a whole dir
 if [ -d $DOTFILES/vimfiles ]; then
   $LN -T $DOTFILES/vimfiles $DST/.vim
+  $LN -T .vim/vimrc $DST/.vimrc
   # On cygwin also create vimfiles in the user profile dir
   if [ $SYSNAME = "cygwin" ]; then
     $LN -T $DOTFILES/vimfiles $(cygpath $USERPROFILE)/vimfiles
