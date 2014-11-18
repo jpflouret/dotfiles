@@ -126,7 +126,8 @@ fi
 
 # run a tmux session
 if [ ! -f $HOME/no_tmux -a -x /usr/bin/tmux ]; then
-  if [ "$TERM" != "screen" ] && [ "$TERM" != "cygwin" ] && [ "$SSH_CONNECTION" == "" ]; then
+  # if [ "$TERM" != "screen" ] && [ "$TERM" != "cygwin" ] && [ "$SSH_CONNECTION" == "" ]; then
+  if [ -z "$TMUX" ] && [ "$TERM" != "cygwin" ]; then
     # Attempt to discover a detached session and attach
     # it, else create a new session
 
