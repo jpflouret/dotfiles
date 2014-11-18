@@ -62,8 +62,8 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 fi
 
 # prompt settings
-PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"
-PROMPT_DIRTRIM=5
+#PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"
+#PROMPT_DIRTRIM=5
 
 PS1=
 #PS1=${PS1}'\[\e[0m\]\n'         # newline
