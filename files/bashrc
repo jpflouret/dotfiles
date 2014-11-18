@@ -138,3 +138,7 @@ if [ ! -f $HOME/no_tmux -a -x /usr/bin/tmux ]; then
     fi
   fi
 fi
+
+if [ -d $HOME/.rvm/bim ]; then
+  export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+fi

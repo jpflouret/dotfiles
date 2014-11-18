@@ -8,3 +8,9 @@ if [ -n "${BASH_VERSION}" ]; then
     source "${HOME}/.bashrc"
   fi
 fi
+
+if [ -d $HOME/.rvm/bin ]; then
+  export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+fi
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
