@@ -106,7 +106,7 @@ if [ -x /usr/bin/dircolors ]; then
   alias ls='ls -hF --color=auto'
   alias ll='ls -hlF --color=auto'
   alias la='ls -haF --color=auto'
-  alias l='ls -hlaF --color=auto'
+  alias l='ls -hCF --color=auto'
 
   alias grep='grep --color=auto'
   alias fgrep='fgrep --color=auto'
@@ -115,7 +115,7 @@ else
   alias ls='ls -hF'
   alias ll='ls -hlF'
   alias la='ls -haF'
-  alias l='ls -hlaF'
+  alias l='ls -hCF'
 fi
 
 alias df='df -h'
