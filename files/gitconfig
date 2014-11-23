@@ -11,7 +11,14 @@
 	st = status
 	d = diff
 	dt = difftool -y
+	lol = log --graph --decorate --pretty=oneline --abbrev-commit
+	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 [merge]
 	tool = vimdiff
 [diff]
 	tool = vimdiff
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
