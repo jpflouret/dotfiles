@@ -99,6 +99,7 @@ g() {
 
 alias v=vim
 alias vi=vim
+alias ta='tmux attach-session -t'
 
 # enable color support
 if [ -x /usr/bin/dircolors ]; then
@@ -106,6 +107,7 @@ if [ -x /usr/bin/dircolors ]; then
   alias ls='ls -hF --color=auto'
   alias ll='ls -hlF --color=auto'
   alias la='ls -haF --color=auto'
+  alias lla='ls -hlaF --color=auto'
   alias l='ls -hCF --color=auto'
 
   alias grep='grep --color=auto'
@@ -115,6 +117,7 @@ else
   alias ls='ls -hF'
   alias ll='ls -hlF'
   alias la='ls -haF'
+  alias lla='ls -hlaF'
   alias l='ls -hCF'
 fi
 
@@ -127,14 +130,21 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+if [ -d $HOME/.rvm/bim ]; then
+  export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+fi
+
 # run a tmux session
+WHOAMI=$(whoami)
 if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
   # if [ "$TERM" != "screen" ] && [ "$TERM" != "cygwin" ] && [ "$SSH_CONNECTION" == "" ]; then
-  if [ -z "$TMUX" ] && [ "$TERM" != "cygwin" ]; then
+  if [ -z "$TMUX" ] && \
+    [ "$TERM" != "cygwin" ] && \
+    [ "$TERM" != "screen" ] && \
+    [ "$TERM" != "screen-256color" ]; then
     # Attempt to discover a detached session and attach
     # it, else create a new session
 
-    WHOAMI=$(whoami)
     if tmux has-session -t $WHOAMI 2>/dev/null; then
       exec tmux -2 attach-session -t $WHOAMI
     else
@@ -143,6 +153,7 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
   fi
 fi
 
-if [ -d $HOME/.rvm/bim ]; then
-  export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+if [ -z "$TMUX" ]; then
+  tmux list-sessions 2>/dev/null
 fi
+
