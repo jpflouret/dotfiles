@@ -1,8 +1,7 @@
-umask 077
+#umask 002
 
 #export LANG=`locale -uU`
 export LC_COLLATE="C"
-export LC_ALL="C"
 
 # if running bash
 if [ -n "${BASH_VERSION}" ]; then
