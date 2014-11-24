@@ -1,4 +1,4 @@
-#umask 022
+umask 077
 
 #export LANG=`locale -uU`
 
