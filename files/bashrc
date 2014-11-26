@@ -53,6 +53,10 @@ HISTFILESIZE=2000
 HISTCONTROL="ignoreboth"
 HISTIGNORE=$'[ \t]*:&:[fb]g:exit'
 
+# These have to come before lesspipe below
+export LESS='-S -R'
+export LESSOPEN='|~/.lessfilter %s'
+
 # use lesspipe if available
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -125,9 +129,6 @@ alias df='df -h'
 alias du='du -h'
 
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-export LESS=' -R'
-export LESSOPEN='|~/.lessfilter %s'
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
