@@ -8,16 +8,16 @@ case "$1" in
     *.ad[asb]|*.asm|*.inc|*.[ch]|*.[ch]pp|*.[ch]xx|*.cc|*.hh|\
     *.lsp|*.l|*.pas|*.p|*.xml|*.xps|*.xsl|*.axp|*.ppd|*.pov|\
     *.diff|*.patch|*.py|*.rb|*.sql|*.ebuild|*.eclass)
-        pygmentize -f 256 "$1";;
+        pygmentize -f 256 -O style=emacs "$1";;
     .bashrc|.bash_aliases|.bash_environment|.profile)
-        pygmentize -f 256 -l sh "$1"
+        pygmentize -f 256 -O style=emacs -l sh "$1"
         ;;
     *)
         head -n 1 $1 | grep "#\!/bin/\(ba\)\?sh" > /dev/null
         if [ "$?" -eq "0" ]; then
-            pygmentize -f 256 -l sh "$1"
+            pygmentize -f 256 -O style=emacs -l sh "$1"
         else
-            #pygmentize -f 256 -l `pygmentize -N "$1"` $1
+            #pygmentize -f 256 -O style=emacs -l `pygmentize -N "$1"` $1
             exit 1
         fi
 esac
