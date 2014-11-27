@@ -1,0 +1,21 @@
+
+# copy selection to system clipboard
+unbind y
+unbind Enter
+# Copy with y to system clipboard
+if-shell "test -x /usr/bin/xsel" \
+    "bind -t vi-copy y copy-pipe 'cat | xsel -bi'" \
+    "bind -t vi-copy y copy-selection"
+# Copy on enter to system clipboard
+if-shell "test -x /usr/bin/xsel" \
+    "bind -t vi-copy Enter copy-pipe 'cat | xsel -bi'" \
+    "bind -t vi-copy Enter copy-selection"
+# Dump tmux buffer to system clipboard
+if-shell "test -x /usr/bin/xsel" \
+    "bind > run '( tmux show-buffer | xsel -bi ) && tmux display-message \"buffer copied\"'" \
+    "bind > run 'tmux display-message \"xsel not found\"'"
+# Paste from system clipboard and set the tmux buffer
+if-shell "test -x /usr/bin/xsel" \
+    "bind < run 'xsel -ob | tmux load-buffer - ; tmux paste-buffer '" \
+    "bind < paste-buffer"
+
