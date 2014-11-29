@@ -8,7 +8,7 @@
 [alias]
 	co = checkout
 	ci = commit
-	st = status
+	st = status -sb
 	d = diff
 	dt = difftool -y
 	lol = log --graph --decorate --pretty=oneline --abbrev-commit
@@ -22,3 +22,6 @@
 	diff = auto
 	interactive = auto
 	status = auto
+[branch]
+	autosetuprebase = always
+	autosetupmerge = always
