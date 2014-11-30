@@ -13,6 +13,8 @@
 	dt = difftool -y
 	lol = log --graph --decorate --pretty=oneline --abbrev-commit
 	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	l = log --oneline --decorate
+	ll = log --oneline --decorate --all
 [merge]
 	tool = vimdiff
 [diff]
