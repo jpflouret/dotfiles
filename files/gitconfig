@@ -1,5 +1,6 @@
 [core]
 	editor = vim
+	excludesfile = ~/.gitignore
 [user]
 	name = JP Flouret
 	email = jpflouret@gmail.com
