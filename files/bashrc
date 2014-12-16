@@ -79,15 +79,22 @@ PS1=
 #PS1=${PS1}'\[\e[0m\]\n'         # newline
 PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
 PS1=${PS1}'\[\e[34;1m\][\t]'     # time
-PS1=${PS1}'\[\e[32m\][\u@\h]'    # user@host
+PS1=${PS1}'$(                                           \
+  if [[ ${EUID} == 0 ]]; then                           \
+    echo -n "\[\e[01;31m\]";                            \
+  else                                                  \
+    echo -n "\[\e[32m\]";                               \
+  fi;                                                   \
+)'
+PS1=${PS1}'[\u@\h]'    # user@host
 if type -t __git_ps1 &>/dev/null; then
   PS1=${PS1}'$(                                         \
     if git branch &>/dev/null; then                     \
       if git status 2>/dev/null | grep -q "nothing to commit"; then \
-        echo -n "\[\033[0;32m\]";                       \
+        echo -n "\[\e[0;32m\]";                       \
         __git_ps1 "(%s)";                               \
       else                                              \
-        echo -n "\[\033[0;31m\]";                       \
+        echo -n "\[\e[0;31m\]";                       \
         __git_ps1 "{%s}";                               \
       fi;                                               \
     fi;                                                 \
