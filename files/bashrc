@@ -167,7 +167,13 @@ fi
 # run a tmux session
 WHOAMI=$(whoami)
 if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
-  if [ -z "$TMUX" ]; then
+  if [ ! -z "$TMUX" ] || ([ -z "$SSH_CONNECTION" ] && ([ "$TERM" == "screen" ] || [ "$TERM" == "screen-256color" ])); then
+    # We are inside a session because either $TMUX is set or
+    # ($TERM is sceen but this is not an ssh connection)
+    :
+  else
+    # Attempt to discover a detached session and attach
+    # it, else create a new session
     if tmux has-session -t $WHOAMI 2>/dev/null; then
       exec tmux -2 attach-session -t $WHOAMI
     else
