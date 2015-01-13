@@ -31,7 +31,7 @@ fi
 
 # set -o notify
 # set -o ignoreeof
-# set -o vi
+set -o vi
 shopt -s nocaseglob
 shopt -s histappend
 shopt -s cdspell
