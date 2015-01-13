@@ -16,6 +16,8 @@
 	lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
 	l = log --oneline --decorate
 	ll = log --oneline --decorate --all
+	unstage = reset HEAD --
+	last = log -1 HEAD -p
 [merge]
 	tool = vimdiff
 [diff]
