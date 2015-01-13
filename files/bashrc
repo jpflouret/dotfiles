@@ -78,7 +78,7 @@ export GIT_PS1_SHOWCOLORHINTS=1
 PS1=
 #PS1=${PS1}'\[\e[0m\]\n'         # newline
 PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
-PS1=${PS1}'\[\e[34;1m\][\t]'     # time
+#PS1=${PS1}'\[\e[34;1m\][\t]'     # time
 PS1=${PS1}'$(                                           \
   if [[ ${EUID} == 0 ]]; then                           \
     echo -n "\[\e[01;31m\]";                            \
