@@ -26,9 +26,13 @@ if [ "$1" = "--serverlist" ]; then
   $VIMPATH/vim.exe --serverlist
 else
   ARGS=
-  if [ "$#" -gt 0 ]; then
-    ARGS=$(cygpath -ma -- $@)
-  fi
-  $VIMPATH/gvim.exe $ARGS >/dev/null 2>&1 &
+  for ARG in "$@"; do
+    if [ -f "$ARG" ]; then
+      ARG=$(cygpath -ma -- "$ARG")
+      ARG="\"$ARG\""
+    fi
+    ARGS="$ARGS $ARG"
+  done
+  eval "$VIMPATH/gvim.exe $ARGS" >/dev/null 2>&1 &
   disown
 fi
