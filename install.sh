@@ -63,12 +63,12 @@ fi
 
 # -- Special cases --
 
-# Vim: also link .vimrc ro .vim/vimrc for vim < 7.4
+# Vim: also link .vimrc to .vim/vimrc for vim < 7.4
 [ -d $DST/.vim ] && $LN .vim/vimrc $DST/.vimrc
 
 # On cygwin also create vimfiles in the user profile dir
-if [ $SYSNAME = "cygwin" ]; then
-  $LN $DOTFILES/files/vim $(cygpath $USERPROFILE)/vimfiles
-fi
+# if [ $SYSNAME = "cygwin" ]; then
+#   $LN $DOTFILES/files/vim $(cygpath $USERPROFILE)/vimfiles
+# fi
 
 # vim:ts=2:sw=2:et:tw=0:
