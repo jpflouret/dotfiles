@@ -64,7 +64,7 @@ fi
 # -- Special cases --
 
 # Vim: also link .vimrc to .vim/vimrc for vim < 7.4
-[ -d $DST/.vim ] && $LN .vim/vimrc $DST/.vimrc
+# [ -d $DST/.vim ] && $LN .vim/vimrc $DST/.vimrc
 
 # On cygwin also create vimfiles in the user profile dir
 # if [ $SYSNAME = "cygwin" ]; then
