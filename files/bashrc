@@ -186,3 +186,6 @@ if [ -z "$TMUX" ]; then
   tmux list-sessions 2>/dev/null
 fi
 
+if [ -d "$HOME/go" ]; then
+  export GOPATH=$HOME/go
+fi
