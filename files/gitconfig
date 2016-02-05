@@ -30,3 +30,5 @@
 [branch]
 	autosetuprebase = always
 	autosetupmerge = always
+[pull]
+	rebase = true
