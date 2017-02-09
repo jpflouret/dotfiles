@@ -26,6 +26,12 @@ if [ -d ~/bin ]; then
   export PATH=~/bin:$PATH
 fi
 
+for SCRIPT in ~/bin/login/*; do
+  if [ -f $SCRIPT -a -x $SCRIPT ]; then
+    source $SCRIPT
+  fi
+done
+
 # Add current dir to path
 #export PATH=.:$PATH
 
