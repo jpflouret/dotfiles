@@ -96,10 +96,9 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 #export GIT_PS1_SHOWCOLORHINTS=1
 
 PS1=
-#PS1=${PS1}'\[\e[0m\]\n'         # newline
+PS1=${PS1}'\[\e[36m\][\h]'
 PS1=${PS1}'${OSNAME:+\[\e[34;1m\][$OSNAME]}'
 PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
-#PS1=${PS1}'\[\e[34;1m\][\t]'     # time
 PS1=${PS1}'$(                                           \
   if [[ ${EUID} == 0 ]]; then                           \
     echo -n "\[\e[01;31m\]";                            \
@@ -107,12 +106,12 @@ PS1=${PS1}'$(                                           \
     echo -n "\[\e[32m\]";                               \
   fi;                                                   \
 )'
-PS1=${PS1}'[\u@\h]'    # user@host
+PS1=${PS1}'[\u]'
 if type -t __git_ps1 &>/dev/null; then
   PS1=${PS1}'$(__git_ps1 "\[\e[35m\][%s]")'
 fi
-PS1=${PS1}'\[\e[33;1m\][\w]'     # working dir
-PS1=${PS1}'\[\e[0m\] \$ '        # $
+PS1=${PS1}'\[\e[33;1m\][\w]'
+PS1=${PS1}'\[\e[0m\] \$ '
 
 # Set the xterm title
 case "$TERM" in
