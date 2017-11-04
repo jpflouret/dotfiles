@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DST=$HOME
 DOTFILES=`readlink -en \`dirname $0\``
@@ -32,7 +32,7 @@ while getopts "h?f" opt; do
 done
 
 
-LN="ln -sT"
+LN="ln -rsT"
 [ $force -eq 0 ] || LN="ln -sfT"
 
 SYSNAME=`lowercase \`uname\``
@@ -45,30 +45,22 @@ esac
 
 for file in $DOTFILES/files/*; do
   target=`basename $file`
-  $LN $file $DST/.$target
+  $LN ${file#$DST/} $DST/.$target
 done
 
 [ -d $DST/bin ] || mkdir $DST/bin
-for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
-  target=`basename $file`
-  $LN $file $DST/bin/$target
-done
+if [ -d $DOTFILES/bin ]; then
+  for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
+    target=`basename $file`
+    $LN ${file#$DST/} $DST/bin/$target
+  done
+fi
 
 if [ -d $DOTFILES/bin/$SYSNAME ]; then
   for file in `find $DOTFILES/bin/$SYSNAME -type f -print`; do
     target=`basename $file`
-    $LN $file $DST/bin/$target
+    $LN ${file#$DST/} $DST/bin/$target
   done
 fi
-
-# -- Special cases --
-
-# Vim: also link .vimrc to .vim/vimrc for vim < 7.4
-# [ -d $DST/.vim ] && $LN .vim/vimrc $DST/.vimrc
-
-# On cygwin also create vimfiles in the user profile dir
-# if [ $SYSNAME = "cygwin" ]; then
-#   $LN $DOTFILES/files/vim $(cygpath $USERPROFILE)/vimfiles
-# fi
 
 # vim:ts=2:sw=2:et:tw=0:
