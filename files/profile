@@ -23,6 +23,8 @@ if [ -s "$HOME/.rvm/scripts/rvm" ]; then
   . "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 fi
 
+unset PAGER
+
 # fix for synology shell set as /bin/sh
 if [ "$BASH" == "/bin/sh" ]; then
   exec /bin/bash
