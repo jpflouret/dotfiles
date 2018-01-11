@@ -33,7 +33,7 @@ done
 
 
 LN="ln -rsT"
-[ $force -eq 0 ] || LN="ln -sfT"
+[ $force -eq 0 ] || LN="$LN -f"
 
 SYSNAME=`lowercase \`uname\``
 case "$SYSNAME" in
@@ -45,21 +45,21 @@ esac
 
 for file in $DOTFILES/files/*; do
   target=`basename $file`
-  $LN ${file#$DST/} $DST/.$target
+  $LN ${file#$DOTFILES/} $DST/.$target
 done
 
 [ -d $DST/bin ] || mkdir $DST/bin
 if [ -d $DOTFILES/bin ]; then
   for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
     target=`basename $file`
-    $LN ${file#$DST/} $DST/bin/$target
+    $LN ${file#$DOTFILES/} $DST/bin/$target
   done
 fi
 
 if [ -d $DOTFILES/bin/$SYSNAME ]; then
   for file in `find $DOTFILES/bin/$SYSNAME -type f -print`; do
     target=`basename $file`
-    $LN ${file#$DST/} $DST/bin/$target
+    $LN ${file#$DOTFILES/} $DST/bin/$target
   done
 fi
 
