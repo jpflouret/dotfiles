@@ -85,8 +85,8 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 fi
 
 # prompt settings
-#PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"
-#PROMPT_DIRTRIM=5
+PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"
+PROMPT_DIRTRIM=5
 
 export GIT_PS1_SHOWUPSTREAM="auto"
 #export GIT_PS1_SHOWDIRTYSTATE=1
@@ -96,11 +96,11 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 
 PS1=
 PS1=${PS1}'\[\e[36m\][\h]'
-PS1=${PS1}'${OSNAME:+\[\e[34;1m\][$OSNAME]}'
+PS1=${PS1}'${OSNAME:+\[\e[34m\][$OSNAME]}'
 PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
 PS1=${PS1}'$(                                           \
   if [[ ${EUID} == 0 ]]; then                           \
-    echo -n "\[\e[01;31m\]";                            \
+    echo -n "\[\e[31m\]";                               \
   else                                                  \
     echo -n "\[\e[32m\]";                               \
   fi;                                                   \
@@ -109,7 +109,7 @@ PS1=${PS1}'[\u]'
 if type -t __git_ps1 &>/dev/null; then
   PS1=${PS1}'$(__git_ps1 "\[\e[35m\][%s]")'
 fi
-PS1=${PS1}'\[\e[33;1m\][\w]'
+PS1=${PS1}'\[\e[33m\][\w]'
 PS1=${PS1}'\[\e[0m\] \$ '
 
 # Set the xterm title
@@ -193,8 +193,4 @@ fi
 
 if [ -z "$TMUX" ]; then
   tmux list-sessions 2>/dev/null
-fi
-
-if [ -d "$HOME/go" ]; then
-  export GOPATH=$HOME/go
 fi
