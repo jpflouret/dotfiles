@@ -95,7 +95,12 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 #export GIT_PS1_SHOWCOLORHINTS=1
 
 PS1=
-PS1=${PS1}'\[\e[36m\][\h]'
+if [ "$TERM" == "cygwin" ]; then
+  # colors seem wrong unless bolded
+  PS1=${PS1}'\[\e[36;1m\][\h]'
+else
+  PS1=${PS1}'\[\e[36m\][\h]'
+fi
 PS1=${PS1}'${OSNAME:+\[\e[34m\][$OSNAME]}'
 PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
 PS1=${PS1}'$(                                           \
