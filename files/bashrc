@@ -181,7 +181,10 @@ fi
 # run a tmux session
 WHOAMI=$(whoami)
 if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
-  if [ ! -z "$TMUX" ] || [ "$TERM" == "screen" ] || [ "$TERM" == "screen-256color" ]; then
+  if [ ! -z "$TMUX" ] ||
+     [ "$TERM" == "screen" ] ||
+     [ "$TERM" == "screen-256color" ] ||
+     [ "$TERM_PROGRAM" == "vscode" ]; then
     # We are inside a session because either $TMUX is set or
     # ($TERM is sceen but this is not an ssh connection)
     :
