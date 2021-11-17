@@ -12,10 +12,13 @@ if [ "$(uname)" == "Darwin" ]; then
   # macOS
   OSNAME=macOS
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  # Linux (or LXSS masquerading as Linux)
-  if grep Microsoft /proc/version >/dev/null 2>&1; then
-    # This is LXSS
-    OSNAME=LXSS
+  # Check to see if we are running WSL/WSL2
+  if grep microsoft-standard-WSL2 /proc/version >/dev/null 2>&1; then
+    # WSL2 is in the version name
+    OSNAME=WSL2
+  elif grep Microsoft /proc/version >/dev/null 2>&1; then
+    # if Microsoft is in the version this is probs Windows Subsystem for Linux
+    OSNAME=WSL
   else
     # This should be Linux
     OSNAME=Linux
@@ -33,6 +36,10 @@ elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]; then
 
   # Use native symbolic links and junctions when in cygwin
   export CYGWIN=winsymlinks:nativestrict
+fi
+
+if [ -x /usr/bin/lsb_release ]; then
+  RELEASE=$(/usr/bin/lsb_release -i -s)
 fi
 
 # Add user's bin folder
@@ -102,6 +109,7 @@ else
   PS1=${PS1}'\[\e[36m\][\h]'
 fi
 PS1=${PS1}'${OSNAME:+\[\e[34m\][$OSNAME]}'
+PS1=${PS1}'${RELEASE:+\[\e[33m\][$RELEASE]}'
 PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
 PS1=${PS1}'$(                                           \
   if [[ ${EUID} == 0 ]]; then                           \
