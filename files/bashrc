@@ -210,3 +210,7 @@ fi
 if [ -z "$TMUX" ]; then
   tmux list-sessions 2>/dev/null
 fi
+
+if [ -f ~/.acme.sh/acme.sh.env ]; then
+  . ~/.acme.sh/acme.sh.env
+fi
