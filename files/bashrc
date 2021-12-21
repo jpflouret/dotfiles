@@ -151,7 +151,7 @@ g() {
 
 alias v=vim
 alias vi=vim
-alias ta='tmux attach-session -t'
+alias ta='tmux attach-session'
 
 # enable color support
 if [ -x /usr/bin/dircolors ]; then
@@ -182,8 +182,12 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-if [ -d $HOME/.rvm/bim ]; then
+if [ -d $HOME/.rvm/bin ]; then
   export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+fi
+
+if [ -f ~/.acme.sh/acme.sh.env ]; then
+  . ~/.acme.sh/acme.sh.env
 fi
 
 # run a tmux session
@@ -199,8 +203,13 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
   else
     # Attempt to discover a detached session and attach
     # it, else create a new session
+
     if tmux has-session -t $WHOAMI 2>/dev/null; then
-      exec tmux -2 attach-session -t $WHOAMI
+      read -p "Attach to tmux session '$WHOAMI'? [y/n] " -n 1 -r
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        exec tmux -2 attach-session -t $WHOAMI
+      fi
     else
       exec tmux -2 new-session -s $WHOAMI
     fi
@@ -211,6 +220,3 @@ if [ -z "$TMUX" ]; then
   tmux list-sessions 2>/dev/null
 fi
 
-if [ -f ~/.acme.sh/acme.sh.env ]; then
-  . ~/.acme.sh/acme.sh.env
-fi
