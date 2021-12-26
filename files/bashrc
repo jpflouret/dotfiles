@@ -190,6 +190,10 @@ if [ -f ~/.acme.sh/acme.sh.env ]; then
   . ~/.acme.sh/acme.sh.env
 fi
 
+if command -v kubectl &>/dev/null; then
+  source <(kubectl completion bash)
+fi
+
 # run a tmux session
 WHOAMI=$(whoami)
 if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
@@ -205,10 +209,16 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
     # it, else create a new session
 
     if tmux has-session -t $WHOAMI 2>/dev/null; then
-      read -p "Attach to tmux session '$WHOAMI'? [y/n] " -n 1 -r
+      read -p "Attach to tmux session '$WHOAMI'? [Y/n] " -n 1 -r
       echo
-      if [[ $REPLY =~ ^[Yy]$ ]]; then
+      if ! [[ $REPLY =~ ^[Nn]$ ]]; then
         exec tmux -2 attach-session -t $WHOAMI
+      else
+        read -p "Do you want a new tmux session? [Y/n] " -n 1 -r
+        echo
+        if ! [[ $REPLY =~ ^[Nn]$ ]]; then
+          exec tmux -2 new-session
+        fi
       fi
     else
       exec tmux -2 new-session -s $WHOAMI
