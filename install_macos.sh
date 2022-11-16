@@ -50,7 +50,7 @@ esac
 [ -d $DST ] || mkdir $DST
 
 for file in $DOTFILES/files/*; do
-  source=`realpath --relative-to=$DST $file`
+  source=`grealpath --relative-to=$DST $file`
   target=`basename $file`
   $LN $source $DST/.$target
 done
@@ -58,7 +58,7 @@ done
 [ -d $DST/bin ] || mkdir $DST/bin
 if [ -d $DOTFILES/bin ]; then
   for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
-    source=`realpath --relative-to=$DST $file`
+    source=`grealpath --relative-to=$DST $file`
     target=`basename $file`
     $LN $source $DST/bin/$target
   done
@@ -66,7 +66,7 @@ fi
 
 if [ -d $DOTFILES/bin/$SYSNAME ]; then
   for file in `find $DOTFILES/bin/$SYSNAME -type f -print`; do
-    source=`realpath --relative-to=$DST $file`
+    source=`grealpath --relative-to=$DST $file`
     target=`basename $file`
     $LN $source $DST/bin/$target
   done
