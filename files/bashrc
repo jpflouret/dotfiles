@@ -215,6 +215,7 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
         exec tmux -2 attach-session -t $WHOAMI
       else
         read -p "Do you want a new tmux session? [Y/n] " -n 1 -r
+        echo
         if ! [[ $REPLY =~ ^[Nn]$ ]]; then
           # The difference between this one and the one below
           # is that this exec does not set the session name
@@ -225,6 +226,7 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
     else
       if [ ! -f $HOME/.hushlogin ]; then
         read -p "Do you want a new tmux session? [Y/n] " -n 1 -r
+        echo
         if ! [[ $REPLY =~ ^[Nn]$ ]]; then
           exec tmux -2 new-session -s $WHOAMI
         fi
