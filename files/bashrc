@@ -152,6 +152,7 @@ g() {
 alias v=vim
 alias vi=vim
 alias ta='tmux attach-session'
+alias ip="ip -c=auto"
 
 # enable color support
 if [ -x /usr/bin/dircolors ]; then
@@ -192,6 +193,18 @@ fi
 
 if command -v kubectl &>/dev/null; then
   source <(kubectl completion bash)
+fi
+
+if which aws_completer &>/dev/null; then
+  complete -C `which aws_completer` aws
+fi
+
+if [ -f ~/.bcrc ]; then
+  export BC_ENV_ARGS=~/.bcrc
+fi
+
+if [ -f "${HOME}/.bashrc_local" ]; then
+  source "${HOME}/.bashrc_local"
 fi
 
 # run a tmux session
@@ -241,6 +254,3 @@ if [ -z "$TMUX" ]; then
   tmux list-sessions 2>/dev/null
 fi
 
-if [ -f "${HOME}/.bashrc_local" ]; then
-  source "${HOME}/.bashrc_local"
-fi
