@@ -32,3 +32,5 @@
 	autosetupmerge = always
 [pull]
 	rebase = true
+[init]
+	defaultBranch = main
