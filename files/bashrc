@@ -40,6 +40,7 @@ fi
 
 if [ -x /usr/bin/lsb_release ]; then
   RELEASE=$(/usr/bin/lsb_release -i -s)
+  RELEASE="${RELEASE} $(/usr/bin/lsb_release -r -s)"
 fi
 
 # Add user's bin folder
@@ -217,16 +218,19 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
     # We are inside a session because either $TMUX is set or
     # ($TERM is sceen but this is not an ssh connection)
     if [ "$TMUX_PANE" == "%0" ]; then
-      # render /etc/issue or else fall back to kernel/system info
-      agetty --show-issue 2>/dev/null || uname -a
 
-      # message of the day
-      for motd in /run/motd.dynamic /etc/motd; do
-        if [ -s "$motd" ]; then cat "$motd"; break; fi
-      done
+      if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
+        # message of the day
+        for motd in /run/motd.dynamic /etc/motd; do
+          if [ -s "$motd" ]; then cat "$motd"; break; fi
+        done
+      else
+        # render /etc/issue or else fall back to kernel/system info
+        agetty --show-issue 2>/dev/null || uname -a
+      fi
 
       # last login
-      last $USER |awk 'NR==2 {
+      last $USER |awk 'NR==3 {
         if (NF==10) { i=1; if ($3!~/^:/) from = " from " $3 }
         printf("Last login: %s %s %s %s%s on %s\n",
           $(3+i), $(4+i), $(5+i), $(6+i), from, $2);
@@ -234,9 +238,8 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
       }'
 
       # mail check
-      if [ -s "/var/mail/$USER" ] # may need to change to /var/spool/mail/$USER
-        then echo "You have $(grep -c '^From ' "/var/mail/$USER") mails."
-        else echo "You have no mail."
+      if [ -s "/var/mail/$USER" ]; then
+          echo "You have $(grep -c '^From ' "/var/mail/$USER") mails."
       fi
     fi
   else
