@@ -229,7 +229,7 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
         agetty --show-issue 2>/dev/null || uname -a
       fi
 
-      # last login
+      # last login NR==3 (1 = current tmux, 2 = "this" login, 3 = last login)
       last $USER |awk 'NR==3 {
         if (NF==10) { i=1; if ($3!~/^:/) from = " from " $3 }
         printf("Last login: %s %s %s %s%s on %s\n",
