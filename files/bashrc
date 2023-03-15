@@ -40,7 +40,11 @@ fi
 
 if [ -x /usr/bin/lsb_release ]; then
   RELEASE=$(/usr/bin/lsb_release -i -s)
-  RELEASE="${RELEASE} $(/usr/bin/lsb_release -r -s)"
+  if [ "$RELEASE" == "Debian" ] && [ -f /etc/debian_version ]; then
+    RELEASE="${RELEASE} $(cat /etc/debian_version)"
+  else
+    RELEASE="${RELEASE} $(/usr/bin/lsb_release -r -s)"
+  fi
 fi
 
 # Add user's bin folder
