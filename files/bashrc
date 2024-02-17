@@ -198,6 +198,20 @@ fi
 
 if command -v kubectl &>/dev/null; then
   source <(kubectl completion bash)
+  alias k=kubectl
+  complete -F __start_kubectl k
+fi
+
+if command -v helm &>/dev/null; then
+  source <(helm completion bash)
+fi
+
+if command -v velero &>/dev/null; then
+  source <(velero completion bash)
+fi
+
+if command -v logcli &>/dev/null; then
+  eval "$(logcli --completion-script-bash)"
 fi
 
 if which aws_completer &>/dev/null; then
