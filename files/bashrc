@@ -214,6 +214,10 @@ if command -v logcli &>/dev/null; then
   eval "$(logcli --completion-script-bash)"
 fi
 
+if command -v flux &>/dev/null; then
+  source <(flux completion bash)
+fi
+
 if which aws_completer &>/dev/null; then
   complete -C `which aws_completer` aws
 fi
