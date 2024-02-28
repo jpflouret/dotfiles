@@ -7,6 +7,19 @@ case $- in
       *) return;;
 esac
 
+pathadd_front() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    PATH="$1${PATH:+":$PATH"}"
+  fi
+}
+
+pathadd_back() {
+  if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+    PATH="${PATH:+"$PATH:"}$1"
+  fi
+}
+
+
 OSNAME=$(uname -s)
 if [ "$(uname)" == "Darwin" ]; then
   # macOS
@@ -48,18 +61,13 @@ if [ -x /usr/bin/lsb_release ]; then
 fi
 
 # Add user's bin folder
-if [ -d ~/bin ]; then
-  export PATH=~/bin:$PATH
-fi
+pathadd_front ~/bin
 
 for SCRIPT in ~/bin/login/*; do
   if [ -f $SCRIPT -a -x $SCRIPT ]; then
     source $SCRIPT
   fi
 done
-
-# Add current dir to path
-#export PATH=.:$PATH
 
 # set -o notify
 # set -o ignoreeof
@@ -127,6 +135,18 @@ PS1=${PS1}'[\u]'
 if type -t __git_ps1 &>/dev/null; then
   PS1=${PS1}'$(__git_ps1 "\[\e[35m\][%s]")'
 fi
+if command -v kubectl &>/dev/null; then
+  if [ -f $HOME/repos/kube-ps1/kube-ps1.sh ]; then
+    source $HOME/repos/kube-ps1/kube-ps1.sh
+    export KUBE_PS1_PREFIX='['
+    export KUBE_PS1_SUFFIX=']'
+    export KUBE_PS1_PREFIX_COLOR=blue
+    export KUBE_PS1_SUFFIX_COLOR=blue
+    export KUBE_PS1_SYMBOL_ENABLE=false
+    export KUBE_PS1_SYMBOL_PADDING=false
+    PS1=${PS1}'$(kube_ps1)'
+  fi
+fi
 PS1=${PS1}'\[\e[33m\][\w]'
 PS1=${PS1}'\[\e[0m\] \$ '
 
@@ -187,9 +207,7 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-if [ -d $HOME/.rvm/bin ]; then
-  export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-fi
+pathadd_back $HOME/.rvm/bin
 
 if [ -f ~/.acme.sh/acme.sh.env ]; then
   . ~/.acme.sh/acme.sh.env
@@ -199,6 +217,7 @@ if command -v kubectl &>/dev/null; then
   source <(kubectl completion bash)
   alias k=kubectl
   complete -F __start_kubectl k
+  pathadd_front $HOME/.krew/bin
 fi
 
 if command -v helm &>/dev/null; then
