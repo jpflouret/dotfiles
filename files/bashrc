@@ -113,8 +113,8 @@ if [ "$TERM" == "cygwin" ]; then
 else
   PS1=${PS1}'\[\e[36m\][\h]'
 fi
-PS1=${PS1}'${OSNAME:+\[\e[35m\][$OSNAME]}'
-PS1=${PS1}'${RELEASE:+\[\e[33m\][$RELEASE]}'
+#PS1=${PS1}'${OSNAME:+\[\e[35m\][$OSNAME]}'
+#PS1=${PS1}'${RELEASE:+\[\e[33m\][$RELEASE]}'
 PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
 PS1=${PS1}'$(                                           \
   if [[ ${EUID} == 0 ]]; then                           \
