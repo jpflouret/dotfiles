@@ -98,7 +98,7 @@ fi
 
 # prompt settings
 PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"
-PROMPT_DIRTRIM=5
+PROMPT_DIRTRIM=3
 
 export GIT_PS1_SHOWUPSTREAM="auto"
 #export GIT_PS1_SHOWDIRTYSTATE=1
