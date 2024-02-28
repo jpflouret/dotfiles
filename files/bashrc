@@ -101,10 +101,10 @@ PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"
 PROMPT_DIRTRIM=3
 
 export GIT_PS1_SHOWUPSTREAM="auto"
-#export GIT_PS1_SHOWDIRTYSTATE=1
-#export GIT_PS1_SHOWSTASHSTATE=1
-#export GIT_PS1_SHOWUNTRACKEDFILES=1
-#export GIT_PS1_SHOWCOLORHINTS=1
+export GIT_PS1_SHOWDIRTYSTATE=1
+export GIT_PS1_SHOWSTASHSTATE=1
+export GIT_PS1_SHOWUNTRACKEDFILES=1
+export GIT_PS1_SHOWCOLORHINTS=1
 
 PS1=
 if [ "$TERM" == "cygwin" ]; then
@@ -162,27 +162,26 @@ alias ip="ip -c=auto"
 # enable color support
 if [ -x /usr/bin/dircolors ]; then
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-  alias ls='ls -hF --color=auto'
-  alias ll='ls -hlF --color=auto'
-  alias la='ls -haF --color=auto'
-  alias lla='ls -hlaF --color=auto'
-  alias l='ls -hCF --color=auto'
-
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
+  alias ls='ls -hlF --color=auto --human-readable --time-style=long-iso --group-directories-first'
+  alias la='ls -hlaF --color=auto --human-readable --time-style=long-iso --group-directories-first'
 else
-  alias ls='ls -hF'
-  alias ll='ls -hlF'
-  alias la='ls -haF'
-  alias lla='ls -hlaF'
-  alias l='ls -hCF'
+  alias ls='ls -hlF --human-readable --time-style=long-iso --group-directories-first'
+  alias la='ls -hlaF --human-readable --time-style=long-iso --group-directories-first'
 fi
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
 
 alias df='df -h'
 alias du='du -h'
+alias free='\free -mht'
 
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+if command -v dmesg &>/dev/null; then
+  alias dmesg='\dmesg --color=auto --reltime --human --nopager --decode'
+fi
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
@@ -241,14 +240,18 @@ if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
     # ($TERM is sceen but this is not an ssh connection)
     if [ "$TMUX_PANE" == "%0" ]; then
 
-      if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
-        # message of the day
-        for motd in /run/motd.dynamic /etc/motd; do
-          if [ -s "$motd" ]; then cat "$motd"; break; fi
-        done
+      if command -v neofetch &>/dev/null; then
+        neofetch
       else
-        # render /etc/issue or else fall back to kernel/system info
-        agetty --show-issue 2>/dev/null || uname -a
+        if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
+          # message of the day
+          for motd in /run/motd.dynamic /etc/motd; do
+            if [ -s "$motd" ]; then cat "$motd"; break; fi
+          done
+        else
+          # render /etc/issue or else fall back to kernel/system info
+          agetty --show-issue 2>/dev/null || uname -a
+        fi
       fi
 
       # mail check
