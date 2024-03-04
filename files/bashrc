@@ -87,6 +87,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
+if [ -d /opt/homebrew ]; then
+  eval $(/opt/homebrew/bin/brew shellenv)
+  [[ -r "/opt/homebrew/etc/profile.d/bash_completion.sh" ]] && . "/opt/homebrew/etc/profile.d/bash_completion.sh"
+fi
+
 # history control
 HISTSIZE=1000
 HISTFILESIZE=2000
@@ -151,43 +156,45 @@ PS1=${PS1}'\[\e[33m\][\w]'
 PS1=${PS1}'\[\e[0m\] \$ '
 
 # Set the xterm title
-case "$TERM" in
-xterm*|rxvt*|screen)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
+# case "$TERM" in
+# xterm*|rxvt*|screen)
+#     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+#     ;;
+# *)
+#     ;;
+# esac
 
-export NCURSES_NO_UTF8_ACS=1
+# export NCURSES_NO_UTF8_ACS=1
 
 # gvim shortcut that uses remote vim when available
-g() {
-  if [ -z "$(which gvim)" ]; then
-    vim "$@"
-  else
-    if [ -z "$(command gvim --serverlist)" ]; then
-      command gvim "$@"
-    else
-      command gvim --remote-silent "$@" ;
-    fi
-  fi
-}
+# g() {
+#   if [ -z "$(which gvim)" ]; then
+#     vim "$@"
+#   else
+#     if [ -z "$(command gvim --serverlist)" ]; then
+#       command gvim "$@"
+#     else
+#       command gvim --remote-silent "$@" ;
+#     fi
+#   fi
+# }
+
+# enable color support
+if [ -x /usr/bin/dircolors ]; then
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
 
 alias v=vim
 alias vi=vim
 alias ta='tmux attach-session'
 alias ip="ip -c=auto"
 
-# enable color support
-if [ -x /usr/bin/dircolors ]; then
-  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-  alias ls='ls -hlF --color=auto --human-readable --time-style=long-iso --group-directories-first'
-  alias la='ls -hlaF --color=auto --human-readable --time-style=long-iso --group-directories-first'
-else
-  alias ls='ls -hlF --human-readable --time-style=long-iso --group-directories-first'
-  alias la='ls -hlaF --human-readable --time-style=long-iso --group-directories-first'
+LSCMD=ls
+if [ "$OSNAME" == "macOS" ]; then
+  LSCMD=gls
 fi
+alias ls="$LSCMD -hlF --color=auto --human-readable --time-style=long-iso --group-directories-first"
+alias la="$LSCMD -hlaF --color=auto --human-readable --time-style=long-iso --group-directories-first"
 
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -197,7 +204,7 @@ alias df='df -h'
 alias du='du -h'
 alias free='\free -mht'
 
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+# alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 if command -v dmesg &>/dev/null; then
   alias dmesg='\dmesg --color=auto --reltime --human --nopager --decode'
