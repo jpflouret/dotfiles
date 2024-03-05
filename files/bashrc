@@ -117,7 +117,7 @@ export GIT_PS1_SHOWUPSTREAM="auto"
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWSTASHSTATE=1
 export GIT_PS1_SHOWUNTRACKEDFILES=1
-export GIT_PS1_SHOWCOLORHINTS=1
+#export GIT_PS1_SHOWCOLORHINTS=1
 
 PS1=
 if [ "$TERM" == "cygwin" ]; then
@@ -137,12 +137,20 @@ PS1=${PS1}'$(                                           \
   fi;                                                   \
 )'
 PS1=${PS1}'[\u]'
-if type -t __git_ps1 &>/dev/null; then
-  PS1=${PS1}'$(__git_ps1 "\[\e[35m\][%s]")'
+if [[ $(type -t __git_ps1) != function ]]; then
+  __git_ps1() {
+    :
+  }
 fi
+PS1=${PS1}'$(__git_ps1 "\[\e[35m\][%s\[\e[35m\]]")'
 if command -v kubectl &>/dev/null; then
-  if [ -f $HOME/repos/kube-ps1/kube-ps1.sh ]; then
-    source $HOME/repos/kube-ps1/kube-ps1.sh
+  if [ "$OSNAME" == "macOS" ]; then
+    KUBE_PS1_PATH=/opt/homebrew/opt/kube-ps1/share/kube-ps1.sh
+  else
+    KUBE_PS1_PATH=$HOME/repos/kube-ps1/kube-ps1.sh
+  fi
+  if [ -f $KUBE_PS1_PATH ]; then
+    source $KUBE_PS1_PATH
     export KUBE_PS1_PREFIX='['
     export KUBE_PS1_SUFFIX=']'
     export KUBE_PS1_PREFIX_COLOR=blue
