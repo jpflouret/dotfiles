@@ -4,6 +4,7 @@
 [user]
 	name = JP Flouret
 	email = jpflouret@gmail.com
+	signingkey = 59A10A345D92A6D4E6FEE844355D3022577E04B4!
 [push]
 	default = upstream
 [alias]
@@ -34,3 +35,10 @@
 	rebase = true
 [init]
 	defaultBranch = main
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[commit]
+	gpgsign = true
