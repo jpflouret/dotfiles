@@ -2,7 +2,7 @@ BoldAsFont=no
 CursorType=underscore
 Columns=170
 Rows=45
-Font=Droid Sans Mono for Powerline
+#Font=Droid Sans Mono for Powerline
 Term=xterm-256color
 
 ForegroundColour=131, 148, 150
