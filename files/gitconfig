@@ -30,7 +30,6 @@
 	status = auto
 [branch]
 	autosetuprebase = always
-	autosetupmerge = always
 [pull]
 	rebase = true
 [init]
