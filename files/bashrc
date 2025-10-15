@@ -259,6 +259,13 @@ if [ -f ~/.bcrc ]; then
   export BC_ENV_ARGS=~/.bcrc
 fi
 
+# Load NVM if available
+if [ -d $HOME/.nvm ]; then
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+fi
+
 if [ -f "${HOME}/.bashrc_local" ]; then
   source "${HOME}/.bashrc_local"
 fi
@@ -266,31 +273,31 @@ fi
 # run a tmux session
 WHOAMI=$(whoami)
 if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
-  if [ ! -z "$TMUX" ] ||
-     [ "$TERM" == "screen" ] ||
-     [ "$TERM" == "screen-256color" ] ||
-     [ "$TERM_PROGRAM" == "vscode" ]; then
-    # We are inside a session because either $TMUX is set or
-    # ($TERM is sceen but this is not an ssh connection)
+  if [ "$TERM_PROGRAM" == "vscode" ]; then
+    # VSCode terminal, pass
+    :
+  elif [ ! -z "$TMUX" ]; then
+    # We are inside a session because $TMUX is set
     if [ "$TMUX_PANE" == "%0" ]; then
-
-      if command -v neofetch &>/dev/null; then
-        neofetch
-      else
-        if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
-          # message of the day
-          for motd in /run/motd.dynamic /etc/motd; do
-            if [ -s "$motd" ]; then cat "$motd"; break; fi
-          done
+      if [ ! -f $HOME/.hushlogin ]; then
+        if command -v neofetch &>/dev/null; then
+          neofetch
         else
-          # render /etc/issue or else fall back to kernel/system info
-          agetty --show-issue 2>/dev/null || uname -a
+          if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
+            # message of the day
+            for motd in /run/motd.dynamic /etc/motd; do
+              if [ -s "$motd" ]; then cat "$motd"; break; fi
+            done
+          else
+            # render /etc/issue or else fall back to kernel/system info
+            agetty --show-issue 2>/dev/null || uname -a
+          fi
         fi
-      fi
 
       # mail check
       if [ -s "/var/mail/$USER" ]; then
-          echo "You have $(grep -c '^From ' "/var/mail/$USER") mails."
+        echo "You have $(grep -c '^From ' "/var/mail/$USER") mails."
+      fi
       fi
     fi
   else
