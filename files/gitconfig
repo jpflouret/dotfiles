@@ -6,7 +6,7 @@
 	email = jpflouret@gmail.com
 	signingkey = 59A10A345D92A6D4E6FEE844355D3022577E04B4!
 [push]
-	default = upstream
+	default = simple
 [alias]
 	co = checkout
 	ci = commit

@@ -61,6 +61,7 @@ if [ -x /usr/bin/lsb_release ]; then
 fi
 
 # Add user's bin folder
+pathadd_front ~/.local/bin
 pathadd_front ~/bin
 
 for SCRIPT in ~/bin/login/*; do
@@ -223,6 +224,7 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 pathadd_back $HOME/.rvm/bin
+pathadd_back $HOME/go/bin
 
 if [ -f ~/.acme.sh/acme.sh.env ]; then
   . ~/.acme.sh/acme.sh.env
@@ -231,7 +233,9 @@ fi
 if command -v kubectl &>/dev/null; then
   source <(kubectl completion bash)
   alias k=kubectl
+  alias wk='watch kubectl'
   complete -F __start_kubectl k
+  complete -F __start_kubectl wk
   pathadd_front $HOME/.krew/bin
 fi
 
@@ -268,6 +272,11 @@ fi
 
 if [ -f "${HOME}/.bashrc_local" ]; then
   source "${HOME}/.bashrc_local"
+fi
+
+# Oh My Posh
+if command -v oh-my-posh &>/dev/null; then
+  eval "$(oh-my-posh init bash --config ~/.config.omp.json)"
 fi
 
 # run a tmux session
