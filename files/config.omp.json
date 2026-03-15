@@ -35,6 +35,22 @@
           "background": "#e439db"
         },
         {
+          "type": "kubectl",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b0",
+          "foreground": "#ffffff",
+          "background": "#2c7cfb",
+          "template": " \ue81d {{ .Context }}{{ if ne .Namespace \"default\" }}::{{ .Namespace }}{{ end }} ",
+          "options": {
+            "context_aliases": {
+                "k8s-admin@k8s": "k8s",
+                "rpi-admin@rpi_k8s": "rpi"
+            },
+            "cluster_aliases": {
+            }
+          }
+        },
+        {
           "type": "text",
           "style": "powerline",
           "powerline_symbol": "\ue0b0",
@@ -104,7 +120,6 @@
           "powerline_symbol": "\ue0b0",
           "options": {
             "home_icon": "~",
-            "max_depth": 4,
             "style": "agnoster_short"
           }
         },
