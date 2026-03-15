@@ -281,7 +281,7 @@ fi
 
 # run a tmux session
 WHOAMI=$(whoami)
-if [ ! -f $HOME/.no_tmux -a -x /usr/bin/tmux ]; then
+if [ ! -f $HOME/.no_tmux ] && command -v tmux &>/dev/null; then
   if [ "$TERM_PROGRAM" == "vscode" ]; then
     # VSCode terminal, pass
     :
