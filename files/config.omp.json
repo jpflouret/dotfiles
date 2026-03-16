@@ -12,7 +12,7 @@
           "type": "os",
           "style": "powerline",
           "powerline_symbol": "\ue0b0",
-          "template": " {{.Icon}}{{ if .Env.POSH_GITBASH }}\ue702{{ else if .WSL }}\ue70f{{ end }} ",
+          "template": "{{.Icon}}{{ if .Env.POSH_GITBASH }}\ue702{{ else if .WSL }}\ue70f{{ end }}",
           "cache": {
             "duration": "24h",
             "strategy": "session"
@@ -54,9 +54,9 @@
           "type": "text",
           "style": "powerline",
           "powerline_symbol": "\ue0b0",
-          "template": " {{ if .Env.USHELL_UE_PROJECT }} {{ .Env.USHELL_UE_PROJECT }} {{ .Env.USHELL_UE_BRANCH }} {{ end }} ",
-          "foreground": "#3b7197",
-          "background": "#00f7ff"
+          "template": " {{ if .Env.USHELL_UE_PROJECT }}{{ .Env.USHELL_UE_PROJECT }}{{ end }} ",
+          "foreground": "#ffffff",
+          "background": "#319497"
         },
         {
           "type": "node",
