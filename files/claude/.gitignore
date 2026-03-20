@@ -29,3 +29,7 @@ config.json
 history.jsonl
 
 commands/guide.md
+
+# Credentials and auth cache
+.credentials.json
+mcp-needs-auth-cache.json
