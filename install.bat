@@ -23,6 +23,11 @@ if exist vim (
     mklink /d %USERPROFILE%\vimfiles %FILES%\vim
 )
 
+rem Install claude config
+if exist claude (
+    mklink /d %USERPROFILE%\.claude %FILES%\claude
+)
+
 popd
 endlocal
 

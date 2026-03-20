@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 4,
+  "final_space": false,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b4",
+          "leading_powerline_symbol": "\ue0b6",
+          "template": " \ue28c {{ if .Env.CLAUDE_MODEL }}{{ .Env.CLAUDE_MODEL }}{{ else }}Claude{{ end }} ",
+          "foreground": "#ffffff",
+          "background": "#4754fd"
+        },
+        {
+          "type": "text",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b4",
+          "template": " {{ if .Env.CLAUDE_CONTEXT_PCT }}\uf080 {{ .Env.CLAUDE_CONTEXT_PCT }}% used{{ else }}\uf080 --{{ end }} ",
+          "foreground": "#111111",
+          "background": "#ffeb95",
+          "background_templates": [
+            "{{ if .Env.CLAUDE_CONTEXT_HIGH }}#ff6b6b{{ end }}",
+            "{{ if .Env.CLAUDE_CONTEXT_MED }}#ffb347{{ end }}",
+            "{{ if .Env.CLAUDE_CONTEXT_LOW }}#5cd6a0{{ end }}"
+          ]
+        },
+        {
+          "type": "text",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b4",
+          "template": "{{ if .Env.CLAUDE_COST }} \uf155 {{ .Env.CLAUDE_COST }} {{ end }}",
+          "foreground": "#ffffff",
+          "background": "#555555"
+        },
+        {
+          "type": "path",
+          "style": "powerline",
+          "foreground": "#ffffff",
+          "background": "#8d47ff",
+          "template": " \uea83 {{ .Path }} ",
+          "powerline_symbol": "\ue0b4",
+          "options": {
+            "home_icon": "~",
+            "style": "short",
+            "max_depth": 4
+          }
+        },
+        {
+          "type": "text",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b4",
+          "template": "{{ if .Env.CLAUDE_WORKTREE }} \ue728 {{ .Env.CLAUDE_WORKTREE }} {{ end }}",
+          "foreground": "#111111",
+          "background": "#61d6d6"
+        },
+        {
+          "type": "git",
+          "style": "powerline",
+          "powerline_symbol": "\ue0b4",
+          "foreground": "#193549",
+          "background": "#05db34",
+          "background_templates": [
+            "{{ if or (.Working.Changed) (.Staging.Changed) }}#ffeb95{{ end }}",
+            "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#c5e478{{ end }}",
+            "{{ if gt .Ahead 0 }}#C792EA{{ end }}",
+            "{{ if gt .Behind 0 }}#C792EA{{ end }}"
+          ],
+          "template": " {{ .UpstreamIcon }}{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}{{ .Working.String }}{{ end }}{{ if .Staging.Changed }}{{ .Staging.String }}{{ end }} ",
+          "options": {
+            "branch_icon": "\ue725 ",
+            "fetch_status": true,
+            "fetch_upstream_icon": true
+          }
+        }
+      ]
+    }
+  ]
+}

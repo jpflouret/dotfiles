@@ -1,0 +1,28 @@
+# Machine-local runtime state
+agent-memory/
+backups/
+cache/
+file-history/
+ide/
+logs/
+paste-cache/
+plans/
+plugins/
+projects/
+session-env/
+sessions/
+shell-snapshots/
+skills/
+statsig/
+tasks/
+todos/
+tokens/
+
+# Machine-local config
+settings.json
+settings.local.json
+gateway-helper-config.json
+config.json
+history.jsonl
+
+commands/guide.md
