@@ -30,6 +30,9 @@ history.jsonl
 
 commands/guide.md
 
+# Backup files
+*.bak
+
 # Credentials and auth cache
 .credentials.json
 mcp-needs-auth-cache.json
