@@ -28,6 +28,19 @@ if exist claude (
     mklink /d %USERPROFILE%\.claude %FILES%\claude
 )
 
+rem Install PowerShell profile
+if exist powershell (
+    if not exist %USERPROFILE%\Documents\PowerShell (
+        mkdir %USERPROFILE%\Documents\PowerShell
+    )
+    if "%FORCE%"=="yes" (
+        if exist %USERPROFILE%\Documents\PowerShell\profile.ps1 (
+            del %USERPROFILE%\Documents\PowerShell\profile.ps1
+        )
+    )
+    mklink %USERPROFILE%\Documents\PowerShell\profile.ps1 %FILES%\powershell\profile.ps1
+)
+
 popd
 endlocal
 
