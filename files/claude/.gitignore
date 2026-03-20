@@ -2,9 +2,11 @@
 agent-memory/
 backups/
 cache/
+debug/
 file-history/
 ide/
 logs/
+memory/
 paste-cache/
 plans/
 plugins/
@@ -15,6 +17,7 @@ shell-snapshots/
 skills/
 statsig/
 tasks/
+telemetry/
 todos/
 tokens/
 
