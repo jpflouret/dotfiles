@@ -41,5 +41,7 @@
 	required = true
 [commit]
 	gpgsign = true
+[includeIf "hasconfig:remote.*.url:*epicgames.net*/**"]
+	path = ~/.gitconfig.d/epic
 [include]
-	path = ./.gitconfig.local
+	path = ~/.gitconfig.d/local

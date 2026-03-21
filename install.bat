@@ -23,6 +23,16 @@ if exist vim (
     mklink /d %USERPROFILE%\vimfiles %FILES%\vim
 )
 
+rem Install gitconfig.d
+if exist gitconfig.d (
+    mklink /d %USERPROFILE%\.gitconfig.d %FILES%\gitconfig.d
+)
+
+rem Migrate old .gitconfig.local to .gitconfig.d/local
+if exist %USERPROFILE%\.gitconfig.local (
+    move %USERPROFILE%\.gitconfig.local %USERPROFILE%\.gitconfig.d\local
+)
+
 rem Install claude config
 if exist claude (
     mklink /d %USERPROFILE%\.claude %FILES%\claude

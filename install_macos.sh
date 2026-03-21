@@ -55,6 +55,11 @@ for file in $DOTFILES/files/*; do
   $LN $source $DST/.$target
 done
 
+# Migrate old .gitconfig.local to .gitconfig.d/local
+if [ -f $DST/.gitconfig.local ]; then
+  mv $DST/.gitconfig.local $DST/.gitconfig.d/local
+fi
+
 [ -d $DST/bin ] || mkdir $DST/bin
 if [ -d $DOTFILES/bin ]; then
   for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
