@@ -45,3 +45,5 @@
 	path = ~/.gitconfig.d/epic
 [include]
 	path = ~/.gitconfig.d/local
+[feature]
+	manyFiles = true
