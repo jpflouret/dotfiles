@@ -112,11 +112,11 @@
             "{{ if gt .Ahead 0 }}#C792EA{{ end }}",
             "{{ if gt .Behind 0 }}#C792EA{{ end }}"
           ],
-          "template": " {{ .UpstreamIcon }}{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}{{ .Working.String }}{{ end }}{{ if .Staging.Changed }}{{ .Staging.String }}{{ end }} ",
+          "template": " {{ .HEAD }}{{ if gt .Ahead 0 }} \u21e1{{.Ahead}}{{ end }}{{ if gt .Behind 0 }} \u21e3{{.Behind}}{{ end }}{{ if .Staging.Changed }} \uf00c{{if gt .Staging.Added 0}} +{{.Staging.Added}}{{end}}{{if gt .Staging.Modified 0}} ~{{.Staging.Modified}}{{end}}{{if gt .Staging.Deleted 0}} -{{.Staging.Deleted}}{{end}}{{ end }}{{ if .Working.Changed }} \uf040{{if gt .Working.Added 0}} +{{.Working.Added}}{{end}}{{if gt .Working.Modified 0}} ~{{.Working.Modified}}{{end}}{{if gt .Working.Deleted 0}} -{{.Working.Deleted}}{{end}}{{if gt .Working.Untracked 0}} ?{{.Working.Untracked}}{{end}}{{ end }} ",
           "options": {
             "branch_icon": "\ue725 ",
             "fetch_status": true,
-            "fetch_upstream_icon": true
+            "fetch_upstream_icon": false
           }
         },
         {
