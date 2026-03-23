@@ -218,10 +218,10 @@ if [ -d "$HOME/.nvm" ]; then
     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
   }
-  nvm() { _nvm_lazy; nvm "$@"; }
-  node() { _nvm_lazy; node "$@"; }
-  npm() { _nvm_lazy; npm "$@"; }
-  npx() { _nvm_lazy; npx "$@"; }
+  function nvm { _nvm_lazy; nvm "$@"; }
+  function node { _nvm_lazy; node "$@"; }
+  function npm { _nvm_lazy; npm "$@"; }
+  function npx { _nvm_lazy; npx "$@"; }
 fi
 
 if [ -f "${HOME}/.bashrc_local" ]; then
