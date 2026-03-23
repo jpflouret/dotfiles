@@ -2,3 +2,6 @@
 *.swo
 *.un~
 *~
+.DS_Store
+._*
+Thumbs.db

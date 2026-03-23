@@ -20,58 +20,42 @@ pathadd_back() {
 }
 
 
-OSNAME=$(uname -s)
-if [ "$(uname)" == "Darwin" ]; then
-  # macOS
-  OSNAME=macOS
-elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  # Check to see if we are running WSL/WSL2
-  if grep microsoft-standard-WSL2 /proc/version >/dev/null 2>&1; then
-    # WSL2 is in the version name
-    OSNAME=WSL2
-  elif grep Microsoft /proc/version >/dev/null 2>&1; then
-    # if Microsoft is in the version this is probs Windows Subsystem for Linux
-    OSNAME=WSL
-  else
-    # This should be Linux
-    OSNAME=Linux
-  fi
-elif [ "$(expr substr $(uname -s) 1 5)" == "MINGW" ]; then
-  # Windows Mys
-  OSNAME=MINGW
-elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]; then
-  # Windows Cygwin
-  OSNAME=Cygwin
-
-  # Exporting PWD in cygwin usually breaks other programs
-  # that use PWD but don't understand cygwin paths.
-  export -n PWD
-
-  # Use native symbolic links and junctions when in cygwin
-  export CYGWIN=winsymlinks:nativestrict
-fi
-
-if [ -x /usr/bin/lsb_release ]; then
-  RELEASE=$(/usr/bin/lsb_release -i -s)
-  if [ "$RELEASE" == "Debian" ] && [ -f /etc/debian_version ]; then
-    RELEASE="${RELEASE} $(cat /etc/debian_version)"
-  else
-    RELEASE="${RELEASE} $(/usr/bin/lsb_release -r -s)"
-  fi
-fi
+case "$(uname -s)" in
+  Darwin)
+    OSNAME=macOS
+    ;;
+  Linux)
+    if grep -q microsoft-standard-WSL2 /proc/version 2>/dev/null; then
+      OSNAME=WSL2
+    elif grep -q Microsoft /proc/version 2>/dev/null; then
+      OSNAME=WSL
+    else
+      OSNAME=Linux
+    fi
+    ;;
+  MINGW*)
+    OSNAME=MINGW
+    ;;
+  CYGWIN*)
+    OSNAME=Cygwin
+    export -n PWD
+    export CYGWIN=winsymlinks:nativestrict
+    ;;
+  *)
+    OSNAME=$(uname -s)
+    ;;
+esac
 
 # Add user's bin folder
 pathadd_front ~/.local/bin
 pathadd_front ~/bin
 
 for SCRIPT in ~/bin/login/*; do
-  if [ -f $SCRIPT -a -x $SCRIPT ]; then
-    source $SCRIPT
+  if [ -f "$SCRIPT" -a -x "$SCRIPT" ]; then
+    source "$SCRIPT"
   fi
 done
 
-# set -o notify
-# set -o ignoreeof
 set -o vi
 shopt -s nocaseglob
 shopt -s histappend
@@ -94,10 +78,13 @@ if [ -d /opt/homebrew ]; then
 fi
 
 # history control
-HISTSIZE=1000
-HISTFILESIZE=2000
+HISTSIZE=50000
+HISTFILESIZE=100000
 HISTCONTROL="ignoreboth"
 HISTIGNORE=$'[ \t]*:&:[fb]g:exit'
+
+export EDITOR=vim
+export VISUAL=vim
 
 # These have to come before lesspipe below
 export LESS='-SRXF'
@@ -114,82 +101,28 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
 fi
 
 # prompt settings
-PROMPT_COMMAND="history -a; history -c; history -r;$PROMPT_COMMAND"
+PROMPT_COMMAND="history -a; history -c; history -r${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 PROMPT_DIRTRIM=3
 
 export GIT_PS1_SHOWUPSTREAM="auto"
 export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWSTASHSTATE=1
 export GIT_PS1_SHOWUNTRACKEDFILES=1
-#export GIT_PS1_SHOWCOLORHINTS=1
 
-PS1=
-if [ "$TERM" == "cygwin" ]; then
-  # colors seem wrong unless bolded
-  PS1=${PS1}'\[\e[36;1m\][\h]'
-else
-  PS1=${PS1}'\[\e[36m\][\h]'
-fi
-#PS1=${PS1}'${OSNAME:+\[\e[35m\][$OSNAME]}'
-#PS1=${PS1}'${RELEASE:+\[\e[33m\][$RELEASE]}'
-PS1=${PS1}'${debian_chroot:+($debian_chroot)}'
-PS1=${PS1}'$(                                           \
-  if [[ ${EUID} == 0 ]]; then                           \
-    echo -n "\[\e[31m\]";                               \
-  else                                                  \
-    echo -n "\[\e[32m\]";                               \
-  fi;                                                   \
-)'
-PS1=${PS1}'[\u]'
 if [[ $(type -t __git_ps1) != function ]]; then
-  __git_ps1() {
-    :
-  }
+  __git_ps1() { :; }
 fi
-PS1=${PS1}'$(__git_ps1 "\[\e[35m\][%s\[\e[35m\]]")'
-if command -v kubectl &>/dev/null; then
-  if [ "$OSNAME" == "macOS" ]; then
-    KUBE_PS1_PATH=/opt/homebrew/opt/kube-ps1/share/kube-ps1.sh
-  else
-    KUBE_PS1_PATH=$HOME/repos/kube-ps1/kube-ps1.sh
-  fi
-  if [ -f $KUBE_PS1_PATH ]; then
-    source $KUBE_PS1_PATH
-    export KUBE_PS1_PREFIX='['
-    export KUBE_PS1_SUFFIX=']'
-    export KUBE_PS1_PREFIX_COLOR=blue
-    export KUBE_PS1_SUFFIX_COLOR=blue
-    export KUBE_PS1_SYMBOL_ENABLE=false
-    export KUBE_PS1_SYMBOL_PADDING=false
-    PS1=${PS1}'$(kube_ps1)'
-  fi
+
+# Fallback PS1 (overridden by Oh My Posh below if available)
+PS1='${debian_chroot:+($debian_chroot)}'
+if [[ ${EUID} == 0 ]]; then
+  PS1+='\[\e[31m\]\u@\h'
+else
+  PS1+='\[\e[32m\]\u@\h'
 fi
-PS1=${PS1}'\[\e[33m\][\w]'
-PS1=${PS1}'\[\e[0m\] \$ '
-
-# Set the xterm title
-# case "$TERM" in
-# xterm*|rxvt*|screen)
-#     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-#     ;;
-# *)
-#     ;;
-# esac
-
-# export NCURSES_NO_UTF8_ACS=1
-
-# gvim shortcut that uses remote vim when available
-# g() {
-#   if [ -z "$(which gvim)" ]; then
-#     vim "$@"
-#   else
-#     if [ -z "$(command gvim --serverlist)" ]; then
-#       command gvim "$@"
-#     else
-#       command gvim --remote-silent "$@" ;
-#     fi
-#   fi
-# }
+PS1+='\[\e[35m\]$(__git_ps1 " (%s)")'
+PS1+='\[\e[33m\] \w'
+PS1+='\[\e[0m\] \$ '
 
 # enable color support
 if [ -x /usr/bin/dircolors ]; then
@@ -205,19 +138,16 @@ LSCMD=ls
 if [ "$OSNAME" == "macOS" ]; then
   LSCMD=gls
 fi
-alias ls="$LSCMD -hlF --color=auto --human-readable --time-style=long-iso --group-directories-first"
-alias la="$LSCMD -hlaF --color=auto --human-readable --time-style=long-iso --group-directories-first"
+alias ls="$LSCMD -lF --color=auto --human-readable --time-style=long-iso --group-directories-first"
+alias la="$LSCMD -laF --color=auto --human-readable --time-style=long-iso --group-directories-first"
 
 alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+alias fgrep='grep -F --color=auto'
+alias egrep='grep -E --color=auto'
 
 alias df='df -h'
 alias du='du -h'
 alias free='\free -mht'
-
-# alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 if command -v dmesg &>/dev/null; then
   alias dmesg='\dmesg --color=auto --reltime --human --nopager --decode'
 fi
@@ -226,51 +156,72 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-pathadd_back $HOME/.rvm/bin
-pathadd_back $HOME/go/bin
+pathadd_back "$HOME/go/bin"
 
 if [ -f ~/.acme.sh/acme.sh.env ]; then
   . ~/.acme.sh/acme.sh.env
 fi
 
+_cached_completion() {
+  local cmd="$1" cache="$HOME/.cache/bash_completion/$1"
+  mkdir -p "$HOME/.cache/bash_completion"
+  if [ ! -f "$cache" ] || [ "$(command -v "$cmd")" -nt "$cache" ]; then
+    "$cmd" completion bash > "$cache" 2>/dev/null
+  fi
+  source "$cache"
+}
+
 if command -v kubectl &>/dev/null; then
-  source <(kubectl completion bash)
+  _cached_completion kubectl
   alias k=kubectl
   alias wk='watch kubectl'
   complete -F __start_kubectl k
   complete -F __start_kubectl wk
-  pathadd_front $HOME/.krew/bin
+  pathadd_front "$HOME/.krew/bin"
 fi
 
 if command -v helm &>/dev/null; then
-  source <(helm completion bash)
+  _cached_completion helm
 fi
 
 if command -v velero &>/dev/null; then
-  source <(velero completion bash)
+  _cached_completion velero
 fi
 
 if command -v logcli &>/dev/null; then
-  eval "$(logcli --completion-script-bash)"
+  local_cache="$HOME/.cache/bash_completion/logcli"
+  if [ ! -f "$local_cache" ] || [ "$(command -v logcli)" -nt "$local_cache" ]; then
+    mkdir -p "$HOME/.cache/bash_completion"
+    logcli --completion-script-bash > "$local_cache" 2>/dev/null
+  fi
+  source "$local_cache"
+  unset local_cache
 fi
 
 if command -v flux &>/dev/null; then
-  source <(flux completion bash)
+  _cached_completion flux
 fi
 
-if which aws_completer &>/dev/null; then
-  complete -C `which aws_completer` aws
+if command -v aws_completer &>/dev/null; then
+  complete -C "$(command -v aws_completer)" aws
 fi
 
 if [ -f ~/.bcrc ]; then
   export BC_ENV_ARGS=~/.bcrc
 fi
 
-# Load NVM if available
-if [ -d $HOME/.nvm ]; then
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Lazy-load NVM
+if [ -d "$HOME/.nvm" ]; then
+  _nvm_lazy() {
+    unset -f nvm node npm npx
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+  }
+  nvm() { _nvm_lazy; nvm "$@"; }
+  node() { _nvm_lazy; node "$@"; }
+  npm() { _nvm_lazy; npm "$@"; }
+  npx() { _nvm_lazy; npx "$@"; }
 fi
 
 if [ -f "${HOME}/.bashrc_local" ]; then
@@ -282,68 +233,54 @@ if command -v oh-my-posh &>/dev/null; then
   eval "$(oh-my-posh init bash --config ~/.config.omp.json)"
 fi
 
-# run a tmux session
-WHOAMI=$(whoami)
-if [ ! -f $HOME/.no_tmux ] && command -v tmux &>/dev/null; then
-  if [ "$TERM_PROGRAM" == "vscode" ]; then
-    # VSCode terminal, pass
-    :
-  elif [ ! -z "$TMUX" ]; then
-    # We are inside a session because $TMUX is set
-    if [ "$TMUX_PANE" == "%0" ]; then
-      if [ ! -f $HOME/.hushlogin ]; then
-        if command -v neofetch &>/dev/null; then
-          neofetch
-        else
-          if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
-            # message of the day
-            for motd in /run/motd.dynamic /etc/motd; do
-              if [ -s "$motd" ]; then cat "$motd"; break; fi
-            done
-          else
-            # render /etc/issue or else fall back to kernel/system info
-            agetty --show-issue 2>/dev/null || uname -a
-          fi
-        fi
+# Auto-launch tmux
+_tmux_motd() {
+  [ "$(tmux display-message -p '#{window_index}:#{pane_index}')" == "1:1" ] || return
+  [ -f "$HOME/.hushlogin" ] && return
+  if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
+    for motd in /run/motd.dynamic /etc/motd; do
+      if [ -s "$motd" ]; then cat "$motd"; break; fi
+    done
+  else
+    agetty --show-issue 2>/dev/null || uname -a
+  fi
+}
 
-      # mail check
-      if [ -s "/var/mail/$USER" ]; then
-        echo "You have $(grep -c '^From ' "/var/mail/$USER") mails."
-      fi
-      fi
+_tmux_auto() {
+  [ -f "$HOME/.no_tmux" ] && return
+  command -v tmux &>/dev/null || return
+  [ "$TERM_PROGRAM" == "vscode" ] && return
+  local WHOAMI="${USER:-$(whoami)}"
+
+  if [ -n "$TMUX" ]; then
+    _tmux_motd
+    return
+  fi
+
+  if tmux has-session -t "$WHOAMI" 2>/dev/null; then
+    read -p "Attach to tmux session '$WHOAMI'? [Y/n] " -n 1 -r
+    echo
+    if ! [[ $REPLY =~ ^[Nn]$ ]]; then
+      exec tmux -2 attach-session -t "$WHOAMI"
+    fi
+    read -p "New tmux session? [Y/n] " -n 1 -r
+    echo
+    if ! [[ $REPLY =~ ^[Nn]$ ]]; then
+      exec tmux -2 new-session
     fi
   else
-    # Attempt to discover a detached session and attach
-    # it, else create a new session.
-    # This needs a bit of a refactor.
-    if tmux has-session -t $WHOAMI 2>/dev/null; then
-      read -p "Attach to tmux session '$WHOAMI'? [Y/n] " -n 1 -r
-      echo
-      if ! [[ $REPLY =~ ^[Nn]$ ]]; then
-        exec tmux -2 attach-session -t $WHOAMI
-      else
-        read -p "Do you want a new tmux session? [Y/n] " -n 1 -r
-        echo
-        if ! [[ $REPLY =~ ^[Nn]$ ]]; then
-          # The difference between this one and the one below
-          # is that this exec does not set the session name
-          # because it already exists.
-          exec tmux -2 new-session
-        fi
-      fi
-    else
-      if [ ! -f $HOME/.hushlogin ]; then
-        read -p "Do you want a new tmux session? [Y/n] " -n 1 -r
-        echo
-        if ! [[ $REPLY =~ ^[Nn]$ ]]; then
-          exec tmux -2 new-session -s $WHOAMI
-        fi
-      else
-          exec tmux -2 new-session -s $WHOAMI
-      fi
+    if [ -f "$HOME/.hushlogin" ]; then
+      exec tmux -2 new-session -s "$WHOAMI"
+    fi
+    read -p "New tmux session? [Y/n] " -n 1 -r
+    echo
+    if ! [[ $REPLY =~ ^[Nn]$ ]]; then
+      exec tmux -2 new-session -s "$WHOAMI"
     fi
   fi
-fi
+}
+
+_tmux_auto
 
 if [ -z "$TMUX" ]; then
   tmux list-sessions 2>/dev/null

@@ -73,6 +73,10 @@
           "background": "#6CA35E",
           "template": " \ue718 ",
           "powerline_symbol": "\ue0b0",
+          "cache": {
+            "duration": "24h",
+            "strategy": "session_folder"
+          },
           "options": {
             "fetch_version": true
           }
@@ -84,6 +88,10 @@
           "background": "#8ED1F7",
           "template": " \ue626 ",
           "powerline_symbol": "\ue0b0",
+          "cache": {
+            "duration": "24h",
+            "strategy": "session_folder"
+          },
           "options": {
             "fetch_version": true
           }

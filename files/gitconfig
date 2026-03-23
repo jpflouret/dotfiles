@@ -5,8 +5,6 @@
 	name = JP Flouret
 	email = jpflouret@gmail.com
 	signingkey = 59A10A345D92A6D4E6FEE844355D3022577E04B4!
-[push]
-	default = simple
 [alias]
 	co = checkout
 	ci = commit
@@ -23,15 +21,12 @@
 	tool = vimdiff
 [diff]
 	tool = vimdiff
-[color]
-	branch = auto
-	diff = auto
-	interactive = auto
-	status = auto
 [branch]
 	autosetuprebase = always
 [pull]
 	rebase = true
+[push]
+	autoSetupRemote = true
 [init]
 	defaultBranch = main
 [filter "lfs"]
@@ -39,6 +34,8 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[rerere]
+	enabled = true
 [commit]
 	gpgsign = true
 [includeIf "hasconfig:remote.*.url:*epicgames.net*/**"]
