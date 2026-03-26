@@ -6,8 +6,7 @@ set -euo pipefail
 SETTINGS="${1:-$HOME/.claude/settings.json}"
 
 if [ ! -f "$SETTINGS" ]; then
-  echo "Settings file not found: $SETTINGS"
-  exit 1
+  echo '{}' > "$SETTINGS"
 fi
 
 if ! command -v jq &>/dev/null; then
