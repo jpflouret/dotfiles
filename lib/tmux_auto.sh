@@ -131,10 +131,6 @@ ta() {
   while IFS= read -r s; do
     sessions+=("$s")
   done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
-  if [ ${#sessions[@]} -eq 0 ]; then
-    echo "No tmux sessions."
-    return 1
-  fi
   _tmux_pick_session "${sessions[@]}"
   case "$REPLY" in
     "")     ;;
