@@ -139,17 +139,6 @@ _tmux_auto_start() {
   [ "$LC_TERMINAL" == "ShellFish" ] && return 1
   [ -n "$TMUX" ] && return 1
 
-  if [ -f "$HOME/.hushlogin" ]; then
-    local sessions=()
-    while IFS= read -r s; do
-      sessions+=("$s")
-    done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
-    if [ ${#sessions[@]} -eq 0 ]; then
-      tmux -2 new-session
-      tmux list-sessions &>/dev/null || exit
-    fi
-  fi
-
   _tmux_pick_and_attach
 
   if [ -z "$TMUX" ]; then
