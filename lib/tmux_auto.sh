@@ -146,8 +146,3 @@ _tmux_auto_start() {
   fi
   return 1
 }
-
-# Interactively pick or create a tmux session.
-ta() {
-  _tmux_pick_and_attach
-}

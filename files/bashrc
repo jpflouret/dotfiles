@@ -142,6 +142,7 @@ fi
 
 alias v=vim
 alias vi=vim
+alias ta=_tmux_pick_and_attach
 alias ip="ip -c=auto"
 
 LSCMD=ls
