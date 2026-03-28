@@ -24,7 +24,7 @@ _tmux_pick_session() {
 
   if command -v fzf &>/dev/null; then
     REPLY=$(printf '%s\n' "${items[@]}" | \
-      fzf --height="$(( count + 1 ))" --no-info --prompt="tmux session: ")
+      fzf --height="~50%" --no-info --prompt="tmux session: ")
     [ "$REPLY" == "${items[$new_idx]}" ] && REPLY=":new"
   else
     local selected=0
