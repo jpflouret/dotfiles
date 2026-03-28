@@ -1,22 +1,4 @@
-# Early return if we don't have or need tmux
-[ -f "$HOME/.no_tmux" ] && return
-command -v tmux &>/dev/null || return
-[ "$TERM_PROGRAM" == "vscode" ] && return
-[ "$LC_TERMINAL" == "ShellFish" ] && return
-
-# If we're already inside tmux then print motd and exit
-if [ -n "$TMUX" ]; then
-  [ -f "$HOME/.hushlogin" ] && return
-  [ "$(tmux display-message -p '#{window_index}:#{pane_index}')" == "1:1" ] || return
-  if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
-    for motd in /run/motd.dynamic /etc/motd; do
-      if [ -s "$motd" ]; then cat "$motd"; break; fi
-    done
-  elif command -v agetty &>/dev/null; then
-    agetty --show-issue 2>/dev/null || uname -a
-  fi
-  return
-fi
+# Tmux session picker and auto-launch functions.
 
 # Draw the TUI session picker menu
 _tmux_pick_draw_menu() {
@@ -87,7 +69,29 @@ _tmux_pick_session() {
   fi
 }
 
-_tmux_init() {
+# Print MOTD for the first pane of the first window in a tmux session.
+_tmux_motd() {
+  [ -n "$TMUX" ] || return 1
+  [ -f "$HOME/.hushlogin" ] && return 0
+  [ "$(tmux display-message -p '#{window_index}:#{pane_index}')" == "1:1" ] || return 0
+  if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
+    for motd in /run/motd.dynamic /etc/motd; do
+      if [ -s "$motd" ]; then cat "$motd"; break; fi
+    done
+  elif command -v agetty &>/dev/null; then
+    agetty --show-issue 2>/dev/null || uname -a
+  fi
+}
+
+# Auto-attach or create a tmux session. Returns 0 if we entered tmux.
+# Skips when tmux is unavailable, suppressed, or in certain terminals.
+_tmux_auto_start() {
+  [ -f "$HOME/.no_tmux" ] && return 1
+  command -v tmux &>/dev/null || return 1
+  [ "$TERM_PROGRAM" == "vscode" ] && return 1
+  [ "$LC_TERMINAL" == "ShellFish" ] && return 1
+  [ -n "$TMUX" ] && return 1
+
   local sessions=()
   while IFS= read -r s; do
     sessions+=("$s")
@@ -107,7 +111,27 @@ _tmux_init() {
   if [ -z "$TMUX" ]; then
     tmux list-sessions 2>/dev/null
   fi
+  return 1
 }
 
-_tmux_init
-unset -f _tmux_init _tmux_pick_session _tmux_pick_draw_menu
+# Interactively pick and attach to a tmux session.
+ta() {
+  if [ -n "$TMUX" ]; then
+    echo "Already inside tmux."
+    return 1
+  fi
+  local sessions=()
+  while IFS= read -r s; do
+    sessions+=("$s")
+  done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
+  if [ ${#sessions[@]} -eq 0 ]; then
+    echo "No tmux sessions."
+    return 1
+  fi
+  _tmux_pick_session "${sessions[@]}"
+  case "$REPLY" in
+    "")     ;;
+    ":new") exec tmux -2 new-session ;;
+    *)      exec tmux -2 attach-session -t "$REPLY" ;;
+  esac
+}
