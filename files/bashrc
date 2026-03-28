@@ -86,6 +86,13 @@ HISTIGNORE=$'[ \t]*:&:[fb]g:exit'
 export EDITOR=vim
 export VISUAL=vim
 
+# fzf
+if command -v fzf &>/dev/null; then
+  if command -v rg &>/dev/null; then
+    export FZF_DEFAULT_COMMAND='rg --files'
+  fi
+fi
+
 # These have to come before lesspipe below
 export LESS='-SRXF'
 
