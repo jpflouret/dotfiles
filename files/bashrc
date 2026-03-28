@@ -6,7 +6,11 @@ case $- in
       *) return;;
 esac
 
-export DOTFILES=$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/..
+_df_source="${BASH_SOURCE[0]}"
+_df_target="$(readlink "$_df_source" || echo "$_df_source")"
+[[ "$_df_target" != /* ]] && _df_target="$(cd "$(dirname "$_df_source")" && pwd)/$_df_target"
+export DOTFILES="$(cd "$(dirname "$_df_target")/.." && pwd)"
+unset _df_source _df_target
 
 pathadd_front() {
   if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
