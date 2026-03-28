@@ -1,32 +1,38 @@
 # Tmux session picker and auto-launch functions.
 
-# Draw the TUI session picker menu
-_tmux_pick_draw_menu() {
-  local count=$1 selected=$2
-  shift 2
-  local items=("$@")
-  local i
-  for (( i = count - 1; i >= 0; i-- )); do
-    if [ $i -eq $selected ]; then
-      printf '\e[K> %s\n' "${items[$i]}"
-    else
-      printf '\e[K  %s\n' "${items[$i]}"
-    fi
-  done
-}
+if command -v fzf &>/dev/null; then
 
-# Pick a tmux session. Sets REPLY to a session name, ":new", or "".
-_tmux_pick_session() {
-  local items=("$@" "New session")
-  local count=${#items[@]}
-
-  local new_idx=$(( count - 1 ))
-
-  if command -v fzf &>/dev/null; then
+  # Pick a tmux session using fzf. Sets REPLY to a session name, ":new", or "".
+  _tmux_pick_session() {
+    local items=("$@" "New session")
+    local new_idx=$(( ${#items[@]} - 1 ))
     REPLY=$(printf '%s\n' "${items[@]}" | \
       fzf --height="~50%" --no-info --prompt="tmux session: ")
     [ "$REPLY" == "${items[$new_idx]}" ] && REPLY=":new"
-  else
+  }
+
+else
+
+  # Draw the TUI session picker menu
+  _tmux_pick_draw_menu() {
+    local count=$1 selected=$2
+    shift 2
+    local items=("$@")
+    local i
+    for (( i = count - 1; i >= 0; i-- )); do
+      if [ $i -eq $selected ]; then
+        printf '\e[K> %s\n' "${items[$i]}"
+      else
+        printf '\e[K  %s\n' "${items[$i]}"
+      fi
+    done
+  }
+
+  # Pick a tmux session using a TUI menu. Sets REPLY to a session name, ":new", or "".
+  _tmux_pick_session() {
+    local items=("$@" "New session")
+    local count=${#items[@]}
+    local new_idx=$(( count - 1 ))
     local selected=0
 
     printf '\e[?25l' # hide cursor
@@ -66,8 +72,9 @@ _tmux_pick_session() {
       _tmux_pick_draw_menu "$count" "$selected" "${items[@]}"
       printf '\e[Ktmux session: '
     done
-  fi
-}
+  }
+
+fi
 
 # Print MOTD for the first pane of the first window in a tmux session.
 _tmux_motd() {
