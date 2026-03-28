@@ -224,6 +224,10 @@ if [ -d "$HOME/.nvm" ]; then
   function npx { _nvm_lazy; npx "$@"; }
 fi
 
+if [ -f "${HOME}/.shellfishrc" ]; then
+  source "${HOME}/.shellfishrc"
+fi
+
 if [ -f "${HOME}/.bashrc_local" ]; then
   source "${HOME}/.bashrc_local"
 fi
