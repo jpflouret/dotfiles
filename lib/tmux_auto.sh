@@ -91,6 +91,7 @@ _tmux_motd() {
 }
 
 # List sessions, prompt user to pick one, and attach or create.
+# Inside tmux, switches client instead of exec-attaching.
 _tmux_pick_and_attach() {
   local sessions=()
   while IFS= read -r s; do
@@ -98,11 +99,19 @@ _tmux_pick_and_attach() {
   done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
 
   _tmux_pick_session "${sessions[@]}"
-  case "$REPLY" in
-    "")     return 1 ;;
-    ":new") exec tmux -2 new-session ;;
-    *)      exec tmux -2 attach-session -t "$REPLY" ;;
-  esac
+  if [ -n "$TMUX" ]; then
+    case "$REPLY" in
+      "")     return 1 ;;
+      ":new") tmux new-session -d && tmux switch-client -n ;;
+      *)      tmux switch-client -t "$REPLY" ;;
+    esac
+  else
+    case "$REPLY" in
+      "")     return 1 ;;
+      ":new") exec tmux -2 new-session ;;
+      *)      exec tmux -2 attach-session -t "$REPLY" ;;
+    esac
+  fi
 }
 
 # Auto-attach or create a tmux session. Returns 0 if we entered tmux.
@@ -134,11 +143,7 @@ _tmux_auto_start() {
   return 1
 }
 
-# Interactively pick and attach to a tmux session.
+# Interactively pick or create a tmux session.
 ta() {
-  if [ -n "$TMUX" ]; then
-    echo "Already inside tmux."
-    return 1
-  fi
   _tmux_pick_and_attach
 }
