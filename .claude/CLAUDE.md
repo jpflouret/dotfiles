@@ -18,11 +18,12 @@ git clone --recursive git@github.com:jpflouret/dotfiles.git
 
 ## Architecture
 
-- `files/bashrc` - Main shell config. Detects OS (macOS/Linux/WSL/WSL2/MINGW/Cygwin) into `$OSNAME`. Uses `pathadd_front`/`pathadd_back` helpers for safe PATH management. Auto-launches tmux on login (skipped in VSCode terminals). Sources `~/.bashrc_local` for machine-specific overrides.
+- `files/bashrc` - Main shell config. Detects OS (macOS/Linux/WSL/WSL2/MINGW/Cygwin) into `$OSNAME`. Uses `pathadd_front`/`pathadd_back` helpers for safe PATH management. Configures fzf defaults. Sources `~/.shellfishrc` for ShellFish terminal integration. Auto-launches tmux on login via `lib/tmux_auto.sh` (skipped in VSCode and ShellFish terminals). Defines `ta` alias for interactive tmux session picker. Sources `~/.bashrc_local` for machine-specific overrides.
+- `lib/tmux_auto.sh` - tmux session picker and auto-launch functions. Provides `_tmux_pick_and_attach` (interactive session picker using fzf when available, TUI fallback otherwise), `_tmux_auto_start` (auto-attach on login), and `_tmux_motd` (MOTD display). Detaching from a tmux session exits the shell to close the SSH connection.
 - `files/profile` - Login shell setup. Fixes umask on Windows, loads RVM, sources bashrc.
 - `files/gitconfig` - Git config with GPG signing, pull-rebase, LFS, and `feature.manyFiles`. Uses conditional includes: `gitconfig.d/epic` for Epic Games repos (matched by remote URL), `gitconfig.d/local` for machine-local overrides.
 - `files/config.omp.json` - Oh My Posh prompt theme (powerline style). Used by both bashrc and `powershell/profile.ps1`. Segments include OS, SSH host, kubectl, UE project/branch (via `USHELL_*` env vars), node/go/python, git status, and path.
-- `files/tmux.conf` - Tmux with vi copy-mode, vim-style pane nav (hjkl), mouse on, 256-color.
+- `files/tmux.conf` - tmux config with vi copy-mode, vim-style pane nav (hjkl), mouse on, 256-color.
 - `files/inputrc` - Readline config with vi mode keybindings and case-insensitive completion.
 - `files/powershell/profile.ps1` - PowerShell profile loading Oh My Posh and EpicWorkspace module.
 - `files/clang-format` - C++ formatting: Allman braces, tabs, no column limit.
