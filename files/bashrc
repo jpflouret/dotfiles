@@ -7,6 +7,8 @@ case $- in
       *) return;;
 esac
 
+export DOTFILES=$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/..
+
 pathadd_front() {
   if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
     PATH="$1${PATH:+":$PATH"}"
@@ -245,55 +247,5 @@ if command -v oh-my-posh &>/dev/null; then
 fi
 
 # Auto-launch tmux
-_tmux_motd() {
-  [ "$(tmux display-message -p '#{window_index}:#{pane_index}')" == "1:1" ] || return
-  [ -f "$HOME/.hushlogin" ] && return
-  if [ -f /run/motd.dynamic ] || [ -f /etc/motd ]; then
-    for motd in /run/motd.dynamic /etc/motd; do
-      if [ -s "$motd" ]; then cat "$motd"; break; fi
-    done
-  else
-    agetty --show-issue 2>/dev/null || uname -a
-  fi
-}
-
-_tmux_auto() {
-  [ -f "$HOME/.no_tmux" ] && return
-  command -v tmux &>/dev/null || return
-  [ "$TERM_PROGRAM" == "vscode" ] && return
-  local WHOAMI="${USER:-$(whoami)}"
-
-  if [ -n "$TMUX" ]; then
-    _tmux_motd
-    return
-  fi
-
-  if tmux has-session -t "$WHOAMI" 2>/dev/null; then
-    read -p "Attach to tmux session '$WHOAMI'? [Y/n] " -n 1 -r
-    echo
-    if ! [[ $REPLY =~ ^[Nn]$ ]]; then
-      exec tmux -2 attach-session -t "$WHOAMI"
-    fi
-    read -p "New tmux session? [Y/n] " -n 1 -r
-    echo
-    if ! [[ $REPLY =~ ^[Nn]$ ]]; then
-      exec tmux -2 new-session
-    fi
-  else
-    if [ -f "$HOME/.hushlogin" ]; then
-      exec tmux -2 new-session -s "$WHOAMI"
-    fi
-    read -p "New tmux session? [Y/n] " -n 1 -r
-    echo
-    if ! [[ $REPLY =~ ^[Nn]$ ]]; then
-      exec tmux -2 new-session -s "$WHOAMI"
-    fi
-  fi
-}
-
-_tmux_auto
-
-if [ -z "$TMUX" ]; then
-  tmux list-sessions 2>/dev/null
-fi
+source "$DOTFILES/lib/tmux_auto.sh"
 
