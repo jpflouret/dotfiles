@@ -1,4 +1,4 @@
-# Tmux session picker and auto-launch functions.
+# tmux session picker and auto-launch functions.
 
 if command -v fzf &>/dev/null; then
 
