@@ -106,11 +106,27 @@ _tmux_pick_and_attach() {
       *)      tmux switch-client -t "$REPLY" ;;
     esac
   else
-    case "$REPLY" in
-      "")     return 1 ;;
-      ":new") exec tmux -2 new-session ;;
-      *)      exec tmux -2 attach-session -t "$REPLY" ;;
-    esac
+    while true; do
+      local target=""
+      case "$REPLY" in
+        "")     return 1 ;;
+        ":new") target=$(tmux -2 new-session -dP) && tmux -2 attach-session -t "$target" ;;
+        *)      target="$REPLY"; tmux -2 attach-session -t "$target" ;;
+      esac
+      # If the attached session still exists, the user detached. End the
+      # shell so the SSH connection closes.
+      if [ -n "$target" ] && tmux has-session -t "$target" 2>/dev/null; then
+        exit
+      fi
+      # No sessions left means we exited the last one.
+      tmux list-sessions &>/dev/null || exit
+      # Session ended but others remain. Re-list and let the user pick.
+      sessions=()
+      while IFS= read -r s; do
+        sessions+=("$s")
+      done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
+      _tmux_pick_session "${sessions[@]}"
+    done
   fi
 }
 
@@ -129,9 +145,8 @@ _tmux_auto_start() {
       sessions+=("$s")
     done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
     if [ ${#sessions[@]} -eq 0 ]; then
-      exec tmux -2 new-session
-    elif [ ${#sessions[@]} -eq 1 ]; then
-      exec tmux -2 attach-session -t "${sessions[0]}"
+      tmux -2 new-session
+      tmux list-sessions &>/dev/null || exit
     fi
   fi
 
