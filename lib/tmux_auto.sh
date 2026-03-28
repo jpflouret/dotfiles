@@ -90,6 +90,21 @@ _tmux_motd() {
   fi
 }
 
+# List sessions, prompt user to pick one, and attach or create.
+_tmux_pick_and_attach() {
+  local sessions=()
+  while IFS= read -r s; do
+    sessions+=("$s")
+  done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
+
+  _tmux_pick_session "${sessions[@]}"
+  case "$REPLY" in
+    "")     return 1 ;;
+    ":new") exec tmux -2 new-session ;;
+    *)      exec tmux -2 attach-session -t "$REPLY" ;;
+  esac
+}
+
 # Auto-attach or create a tmux session. Returns 0 if we entered tmux.
 # Skips when tmux is unavailable, suppressed, or in certain terminals.
 _tmux_auto_start() {
@@ -99,21 +114,19 @@ _tmux_auto_start() {
   [ "$LC_TERMINAL" == "ShellFish" ] && return 1
   [ -n "$TMUX" ] && return 1
 
-  local sessions=()
-  while IFS= read -r s; do
-    sessions+=("$s")
-  done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
-
-  if [ ${#sessions[@]} -eq 0 ] && [ -f "$HOME/.hushlogin" ]; then
-    exec tmux -2 new-session
+  if [ -f "$HOME/.hushlogin" ]; then
+    local sessions=()
+    while IFS= read -r s; do
+      sessions+=("$s")
+    done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
+    if [ ${#sessions[@]} -eq 0 ]; then
+      exec tmux -2 new-session
+    elif [ ${#sessions[@]} -eq 1 ]; then
+      exec tmux -2 attach-session -t "${sessions[0]}"
+    fi
   fi
 
-  _tmux_pick_session "${sessions[@]}"
-  case "$REPLY" in
-    "")     ;;
-    ":new") exec tmux -2 new-session ;;
-    *)      exec tmux -2 attach-session -t "$REPLY" ;;
-  esac
+  _tmux_pick_and_attach
 
   if [ -z "$TMUX" ]; then
     tmux list-sessions 2>/dev/null
@@ -127,14 +140,5 @@ ta() {
     echo "Already inside tmux."
     return 1
   fi
-  local sessions=()
-  while IFS= read -r s; do
-    sessions+=("$s")
-  done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
-  _tmux_pick_session "${sessions[@]}"
-  case "$REPLY" in
-    "")     ;;
-    ":new") exec tmux -2 new-session ;;
-    *)      exec tmux -2 attach-session -t "$REPLY" ;;
-  esac
+  _tmux_pick_and_attach
 }
