@@ -11,5 +11,14 @@ ellipsis (\u2026), etc. Use plain ASCII equivalents (e.g. "-", "--", "...", "\""
 - Commit messages should be brief and not describe every detail
 - Prefer single line commit messages
 - Prefer -m over heredoc for commit messages
-- Avoid using 'git -C' or 'cd /path && git' when it isn't necessary
+- Never use 'git -C' or 'cd /path && git' when already in the repo working directory. Only use these when targeting a different repository.
 - Always run git add and git commit as separate commands, never chained together
+
+## Kubernetes
+
+- Always put --context at the end of kubectl and flux commands so permissions across clusters work.
+
+## Bug Fixes
+
+- If a project has test infrastructure, write a failing test that reproduces the bug before writing the fix.
+- Verify the test fails with the old code, then apply the fix and confirm it passes.
