@@ -98,7 +98,11 @@ _tmux_pick_and_attach() {
     sessions+=("$s")
   done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
 
-  _tmux_pick_session "${sessions[@]}"
+  if [ -f "$HOME/.hushlogin" ]; then
+    REPLY=":new"
+  else
+    _tmux_pick_session "${sessions[@]}"
+  fi
   if [ -n "$TMUX" ]; then
     case "$REPLY" in
       "")     return 1 ;;
@@ -118,6 +122,8 @@ _tmux_pick_and_attach() {
       if [ -n "$target" ] && tmux has-session -t "$target" 2>/dev/null; then
         exit
       fi
+      # If hushlogin is set don't reprompt, just exit
+      [ -f "$HOME/.hushlogin" ] && exit
       # No sessions left means we exited the last one.
       tmux list-sessions &>/dev/null || exit
       # Session ended but others remain. Re-list and let the user pick.
@@ -133,11 +139,12 @@ _tmux_pick_and_attach() {
 # Auto-attach or create a tmux session. Returns 0 if we entered tmux.
 # Skips when tmux is unavailable, suppressed, or in certain terminals.
 _tmux_auto_start() {
-  [ -f "$HOME/.no_tmux" ] && return 1
-  command -v tmux &>/dev/null || return 1
-  [ "$TERM_PROGRAM" == "vscode" ] && return 1
-  [ "$LC_TERMINAL" == "ShellFish" ] && return 1
-  [ -n "$TMUX" ] && return 1
+  [ -f "$HOME/.no_tmux" ] && return 1           # no if ~/.no_tmux exists
+  command -v tmux &>/dev/null || return 1       # no if tmux not found
+  [ "$TERM_PROGRAM" == "vscode" ] && return 1   # not for vscode
+  [ "$LC_TERMINAL" == "ShellFish" ] && return 1 # not for shellfish
+  [ "$TERM" == "tmux-256color" ] && return 1    # avoid tmux-in-tmux
+  [ -n "$TMUX" ] && return 1                    # not if already in tmux
 
   _tmux_pick_and_attach
 
