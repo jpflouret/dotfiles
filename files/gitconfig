@@ -38,9 +38,9 @@
 	enabled = true
 [commit]
 	gpgsign = true
-[includeIf "hasconfig:remote.*.url:*epicgames.net*/**"]
-	path = ~/.gitconfig.d/epic
-[include]
-	path = ~/.gitconfig.d/local
 [feature]
 	manyFiles = true
+[url "git@github.com:jpflouret/"]
+	insteadOf = https://github.com/jpflouret/
+[include]
+	path = ~/.gitconfig.d/local
