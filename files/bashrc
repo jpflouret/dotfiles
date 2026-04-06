@@ -87,9 +87,6 @@ HISTFILESIZE=100000
 HISTCONTROL="ignoreboth"
 HISTIGNORE=$'[ \t]*:&:[fb]g:exit'
 
-export EDITOR=vim
-export VISUAL=vim
-
 # fzf
 if command -v fzf &>/dev/null; then
   if command -v rg &>/dev/null; then
@@ -140,8 +137,17 @@ if [ -x /usr/bin/dircolors ]; then
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 fi
 
-alias v=vim
-alias vi=vim
+if EDITOR=$(command -v vim); then
+  alias v="$EDITOR"
+  alias vi="$EDITOR"
+  alias sv="sudo $EDITOR"
+else
+  EDITOR=vi
+fi
+
+export EDITOR
+export VISUAL=$EDITOR
+
 alias ta=_tmux_pick_and_attach
 alias ip="ip -c=auto"
 
