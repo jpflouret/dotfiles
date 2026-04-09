@@ -1,0 +1,32 @@
+#!/bin/bash
+
+command -v pygmentize &>/dev/null || exit 1
+
+# Skip binary files
+file --mime-encoding -b "$1" 2>/dev/null | grep -q binary && exit 1
+
+PYGMENTIZE_STYLE="${PYGMENTIZE_STYLE:-native}"
+
+# Handle bare shell config names that pygmentize does not recognize
+filename=$(basename "$1")
+case "$filename" in
+    bashrc|kshrc|zshrc|profile|cshrc|tcshrc)
+        pygmentize -f 256 -O style="$PYGMENTIZE_STYLE" -l sh "$1"
+        exit $?
+        ;;
+esac
+
+# Let pygmentize auto-detect the lexer from the filename
+pygmentize -f 256 -O style="$PYGMENTIZE_STYLE" -g "$1" 2>/dev/null && exit 0
+
+# If auto-detect failed, try the shebang
+lexer=$(head -n 1 "$1" 2>/dev/null | grep '^#!' | awk -F" " \
+    '{ if (/env/) { print $2 } else { sub(/.*\//, ""); print $1 } }')
+
+case "$lexer" in
+    node|nodejs) lexer=js ;;
+    "") exit 1 ;;
+esac
+
+pygmentize -f 256 -O style="$PYGMENTIZE_STYLE" -l "$lexer" "$1" 2>/dev/null || exit 1
+exit 0

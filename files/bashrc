@@ -102,10 +102,16 @@ fi
 # These have to come before lesspipe below
 export LESS='-SRXF'
 
-# use lesspipe if available
-command -v lesspipe.sh &>/dev/null && eval "$(SHELL=/bin/sh lesspipe.sh)"
-if command -v pygmentize &>/dev/null; then
-  export LESSCOLORIZER='pygmentize -O style=native'
+export PYGMENTIZE_STYLE='monokai'
+
+# use lesspipe if available, fall back to lessfilter directly
+if command -v lesspipe.sh &>/dev/null; then
+  eval "$(SHELL=/bin/sh lesspipe.sh)"
+elif command -v lesspipe &>/dev/null; then
+  eval "$(SHELL=/bin/sh lesspipe)"
+fi
+if [ -z "$LESSOPEN" ] && [ -x ~/.lessfilter ]; then
+  export LESSOPEN="||~/.lessfilter %s"
 fi
 
 # set debian_chroot if available
