@@ -238,6 +238,11 @@ if [ -f ~/.bcrc ]; then
   export BC_ENV_ARGS=~/.bcrc
 fi
 
+# npm global bin (prefix is set in ~/.npmrc; skip when using NVM)
+if [ ! -d "$HOME/.nvm" ]; then
+  pathadd_front "$HOME/.npm-global/bin"
+fi
+
 # Lazy-load NVM
 if [ -d "$HOME/.nvm" ]; then
   _nvm_lazy() {
