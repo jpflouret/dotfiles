@@ -3,7 +3,7 @@
 command -v pygmentize &>/dev/null || exit 1
 
 # Skip binary files
-file --mime-encoding -b "$1" 2>/dev/null | grep -q binary && exit 1
+file --mime-encoding -bL "$1" 2>/dev/null | grep -q binary && exit 1
 
 PYGMENTIZE_STYLE="${PYGMENTIZE_STYLE:-native}"
 
