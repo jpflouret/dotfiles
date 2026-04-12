@@ -1,4 +1,5 @@
 # tmux session picker and auto-launch functions.
+# shellcheck shell=bash
 
 if command -v fzf &>/dev/null; then
 
@@ -20,7 +21,7 @@ else
     local items=("$@")
     local i
     for (( i = count - 1; i >= 0; i-- )); do
-      if [ $i -eq $selected ]; then
+      if [ $i -eq "$selected" ]; then
         printf '\e[K> %s\n' "${items[$i]}"
       else
         printf '\e[K  %s\n' "${items[$i]}"
@@ -95,9 +96,22 @@ _tmux_list_sessions() {
   tmux list-sessions -F "#{session_last_attached}	#{session_name}" 2>/dev/null | sort -rn | cut -f2-
 }
 
+_tmux_print_remaining_sessions() {
+  local sessions
+  sessions=$(tmux list-sessions -F "#{session_last_attached}	  #{session_name}: #{session_windows} window(s)#{?session_attached, (attached),}" 2>/dev/null | sort -rn | cut -f2-) || return 0
+  [ -n "$sessions" ] || return 0
+  printf '%s\n' "$sessions"
+}
+
 # List sessions, prompt user to pick one, and attach or create.
 # Inside tmux, switches client instead of exec-attaching.
 _tmux_pick_and_attach() {
+  local reprompt=1
+  if [ "$1" == "--once" ]; then
+    reprompt=0
+    shift
+  fi
+
   local sessions=()
   while IFS= read -r s; do
     sessions+=("$s")
@@ -111,7 +125,7 @@ _tmux_pick_and_attach() {
   if [ -n "$TMUX" ]; then
     case "$REPLY" in
       "")     return 1 ;;
-      ":new") tmux new-session -d && tmux switch-client -n ;;
+      ":new") local target; target=$(tmux new-session -dP -F "#{session_name}") && tmux switch-client -t "$target" ;;
       *)      tmux switch-client -t "$REPLY" ;;
     esac
   else
@@ -119,12 +133,19 @@ _tmux_pick_and_attach() {
       local target=""
       case "$REPLY" in
         "")     return 1 ;;
-        ":new") target=$(tmux -2 new-session -dP) && tmux -2 attach-session -t "$target" ;;
+        ":new") target=$(tmux -2 new-session -dP -F "#{session_name}") && tmux -2 attach-session -t "$target" ;;
         *)      target="$REPLY"; tmux -2 attach-session -t "$target" ;;
       esac
       # If the attached session still exists, the user detached. End the
       # shell so the SSH connection closes.
       if [ -n "$target" ] && tmux has-session -t "$target" 2>/dev/null; then
+        [ "$reprompt" -eq 0 ] && _tmux_print_remaining_sessions
+        exit
+      fi
+      # Auto-start should not reopen the picker after the selected session
+      # exits. Show any leftovers, then end the login shell instead.
+      if [ "$reprompt" -eq 0 ]; then
+        _tmux_print_remaining_sessions
         exit
       fi
       # No sessions left means we exited the last one.
@@ -139,7 +160,8 @@ _tmux_pick_and_attach() {
   fi
 }
 
-# Auto-attach or create a tmux session. Returns 0 if we entered tmux.
+# Auto-attach or create a tmux session. Exits after auto-attached tmux ends.
+# Returns 1 when skipped or cancelled.
 # Skips when tmux is unavailable, suppressed, or in certain terminals.
 _tmux_auto_start() {
   [ -f "$HOME/.no_tmux" ] && return 1           # no if ~/.no_tmux exists
@@ -149,10 +171,10 @@ _tmux_auto_start() {
   [ "$TERM" == "tmux-256color" ] && return 1    # avoid tmux-in-tmux
   [ -n "$TMUX" ] && return 1                    # not if already in tmux
 
-  _tmux_pick_and_attach
+  _tmux_pick_and_attach --once
 
   if [ -z "$TMUX" ]; then
-    tmux list-sessions 2>/dev/null
+    _tmux_print_remaining_sessions
   fi
   return 1
 }
