@@ -164,11 +164,15 @@ _tmux_pick_and_attach() {
 # Returns 1 when skipped or cancelled.
 # Skips when tmux is unavailable, suppressed, or in certain terminals.
 _tmux_auto_start() {
+  local force_remote_tmux=${FORCE_REMOTE_TMUX:-}
   [ -f "$HOME/.no_tmux" ] && return 1           # no if ~/.no_tmux exists
   command -v tmux &>/dev/null || return 1       # no if tmux not found
   [ "$TERM_PROGRAM" == "vscode" ] && return 1   # not for vscode
   [ "$LC_TERMINAL" == "ShellFish" ] && return 1 # not for shellfish
-  [ "$TERM" == "tmux-256color" ] && return 1    # avoid tmux-in-tmux
+  [ -f "$HOME/.force_remote_tmux" ] && force_remote_tmux=1
+  [ "$TERM" == "tmux-256color" ] && [ -z "$force_remote_tmux" ] && return 1
+                                                # avoid tmux-in-tmux unless
+                                                # explicitly forced
   [ -n "$TMUX" ] && return 1                    # not if already in tmux
 
   _tmux_pick_and_attach --once
