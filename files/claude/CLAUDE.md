@@ -16,7 +16,13 @@ ellipsis (\u2026), etc. Use plain ASCII equivalents (e.g. "-", "--", "...", "\""
 
 ## Kubernetes
 
-- Always put --context at the end of kubectl and flux commands so permissions across clusters work.
+- For kubectl/flux commands, --context and --namespace must come AFTER the
+  verb (get, describe, logs, exec, etc.), not before it. Placing them before
+  the verb breaks pre-approved tool permissions, which match on command
+  prefix and will trigger an approval prompt. Putting them at the end of the
+  command is the simplest way to satisfy this, EXCEPT for commands with a
+  `--` separator (kubectl exec/run), where --context must come before the
+  `--` or it gets passed to the inner command instead of kubectl.
 
 ## Bug Fixes
 
