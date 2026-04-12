@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DST=$HOME
-DOTFILES=`readlink -en \`dirname $0\``
+DOTFILES=$(readlink -en "$(dirname "$0")")
 
 if [ -z "$CYGWIN" ]; then
   export CYGWIN=winsymlinks:native
@@ -32,40 +32,40 @@ while getopts "h?f" opt; do
 done
 
 
-LN="ln -rsT"
-[ $force -eq 0 ] || LN="$LN -f"
+LN=(ln -rsT)
+[ "$force" -eq 0 ] || LN+=(-f)
 
-SYSNAME=`lowercase \`uname\``
+SYSNAME=$(lowercase "$(uname)")
 case "$SYSNAME" in
   cygwin*)  SYSNAME=cygwin ;;
 esac
 
 
-[ -d $DST ] || mkdir $DST
+[ -d "$DST" ] || mkdir "$DST"
 
-for file in $DOTFILES/files/*; do
-  target=`basename $file`
-  $LN ${file#$DOTFILES/} $DST/.$target
+for file in "$DOTFILES"/files/*; do
+  target=$(basename "$file")
+  "${LN[@]}" "$file" "$DST/.$target"
 done
 
 # Migrate old .gitconfig.local to .gitconfig.d/local
-if [ -f $DST/.gitconfig.local ]; then
-  mv $DST/.gitconfig.local $DST/.gitconfig.d/local
+if [ -f "$DST/.gitconfig.local" ]; then
+  mv "$DST/.gitconfig.local" "$DST/.gitconfig.d/local"
 fi
 
-[ -d $DST/bin ] || mkdir $DST/bin
-if [ -d $DOTFILES/bin ]; then
-  for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
-    target=`basename $file`
-    $LN ${file#$DOTFILES/} $DST/bin/$target
-  done
+[ -d "$DST/bin" ] || mkdir "$DST/bin"
+if [ -d "$DOTFILES/bin" ]; then
+  while IFS= read -r -d '' file; do
+    target=$(basename "$file")
+    "${LN[@]}" "$file" "$DST/bin/$target"
+  done < <(find "$DOTFILES/bin" -maxdepth 1 -type f -print0)
 fi
 
-if [ -d $DOTFILES/bin/$SYSNAME ]; then
-  for file in `find $DOTFILES/bin/$SYSNAME -type f -print`; do
-    target=`basename $file`
-    $LN ${file#$DOTFILES/} $DST/bin/$target
-  done
+if [ -d "$DOTFILES/bin/$SYSNAME" ]; then
+  while IFS= read -r -d '' file; do
+    target=$(basename "$file")
+    "${LN[@]}" "$file" "$DST/bin/$target"
+  done < <(find "$DOTFILES/bin/$SYSNAME" -type f -print0)
 fi
 
 # vim:ts=2:sw=2:et:tw=0:

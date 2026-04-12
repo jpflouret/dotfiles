@@ -31,7 +31,8 @@ fi
 # Extract cost
 cost=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
 if [ -n "$cost" ]; then
-  export CLAUDE_COST=$(printf "%.2f" "$cost")
+  CLAUDE_COST=$(printf "%.2f" "$cost")
+  export CLAUDE_COST
 fi
 
 # Extract worktree name

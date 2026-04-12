@@ -37,44 +37,52 @@ while getopts "h?fn" opt; do
 done
 
 
-LN="ln -s"
-[ $force -eq 0 ] || LN="$LN -f"
-[ $dry_run -eq 0 ] || LN="echo $LN"
+LN=(ln -s)
+[ "$force" -eq 0 ] || LN+=(-f)
 
-SYSNAME=`lowercase \`uname\``
+link_file() {
+  if [ "$dry_run" -eq 0 ]; then
+    "${LN[@]}" "$1" "$2"
+  else
+    printf '%q ' "${LN[@]}" "$1" "$2"
+    printf '\n'
+  fi
+}
+
+SYSNAME=$(lowercase "$(uname)")
 case "$SYSNAME" in
   cygwin*)  SYSNAME=cygwin ;;
 esac
 
 
-[ -d $DST ] || mkdir $DST
+[ -d "$DST" ] || mkdir "$DST"
 
-for file in $DOTFILES/files/*; do
-  source=`grealpath --relative-to=$DST $file`
-  target=`basename $file`
-  $LN $source $DST/.$target
+for file in "$DOTFILES"/files/*; do
+  link_source=$(grealpath --relative-to="$DST" "$file")
+  target=$(basename "$file")
+  link_file "$link_source" "$DST/.$target"
 done
 
 # Migrate old .gitconfig.local to .gitconfig.d/local
-if [ -f $DST/.gitconfig.local ]; then
-  mv $DST/.gitconfig.local $DST/.gitconfig.d/local
+if [ -f "$DST/.gitconfig.local" ]; then
+  mv "$DST/.gitconfig.local" "$DST/.gitconfig.d/local"
 fi
 
-[ -d $DST/bin ] || mkdir $DST/bin
-if [ -d $DOTFILES/bin ]; then
-  for file in `find $DOTFILES/bin -maxdepth 1 -type f -print`; do
-    source=`grealpath --relative-to=$DST $file`
-    target=`basename $file`
-    $LN $source $DST/bin/$target
-  done
+[ -d "$DST/bin" ] || mkdir "$DST/bin"
+if [ -d "$DOTFILES/bin" ]; then
+  while IFS= read -r -d '' file; do
+    link_source=$(grealpath --relative-to="$DST" "$file")
+    target=$(basename "$file")
+    link_file "$link_source" "$DST/bin/$target"
+  done < <(find "$DOTFILES/bin" -maxdepth 1 -type f -print0)
 fi
 
-if [ -d $DOTFILES/bin/$SYSNAME ]; then
-  for file in `find $DOTFILES/bin/$SYSNAME -type f -print`; do
-    source=`grealpath --relative-to=$DST $file`
-    target=`basename $file`
-    $LN $source $DST/bin/$target
-  done
+if [ -d "$DOTFILES/bin/$SYSNAME" ]; then
+  while IFS= read -r -d '' file; do
+    link_source=$(grealpath --relative-to="$DST" "$file")
+    target=$(basename "$file")
+    link_file "$link_source" "$DST/bin/$target"
+  done < <(find "$DOTFILES/bin/$SYSNAME" -type f -print0)
 fi
 
 # vim:ts=2:sw=2:et:tw=0:
