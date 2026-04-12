@@ -90,15 +90,20 @@ _tmux_motd() {
   fi
 }
 
+# List tmux session names with the most recently attached session first.
+_tmux_list_sessions() {
+  tmux list-sessions -F "#{session_last_attached}	#{session_name}" 2>/dev/null | sort -rn | cut -f2-
+}
+
 # List sessions, prompt user to pick one, and attach or create.
 # Inside tmux, switches client instead of exec-attaching.
 _tmux_pick_and_attach() {
   local sessions=()
   while IFS= read -r s; do
     sessions+=("$s")
-  done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
+  done < <(_tmux_list_sessions)
 
-  if [ -f "$HOME/.hushlogin" ]; then
+  if [ -f "$HOME/.hushlogin" ] && [ ${#sessions[@]} -eq 0 ]; then
     REPLY=":new"
   else
     _tmux_pick_session "${sessions[@]}"
@@ -122,15 +127,13 @@ _tmux_pick_and_attach() {
       if [ -n "$target" ] && tmux has-session -t "$target" 2>/dev/null; then
         exit
       fi
-      # If hushlogin is set don't reprompt, just exit
-      [ -f "$HOME/.hushlogin" ] && exit
       # No sessions left means we exited the last one.
       tmux list-sessions &>/dev/null || exit
       # Session ended but others remain. Re-list and let the user pick.
       sessions=()
       while IFS= read -r s; do
         sessions+=("$s")
-      done < <(tmux list-sessions -F "#{session_name}" 2>/dev/null)
+      done < <(_tmux_list_sessions)
       _tmux_pick_session "${sessions[@]}"
     done
   fi
