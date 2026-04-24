@@ -90,8 +90,10 @@ HISTCONTROL="ignoreboth"
 HISTIGNORE=$'[ \t]*:&:[fb]g:exit'
 
 # Bitwarden SSH agent
-if [ -S ~/.bitwarden-ssh-agent.sock ]; then
-  export SSH_AUTH_SOCK=~/.bitwarden-ssh-agent.sock
+if [ -S "$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock" ]; then
+  export SSH_AUTH_SOCK="$HOME/Library/Containers/com.bitwarden.desktop/Data/.bitwarden-ssh-agent.sock"
+elif [ -S "$HOME/.bitwarden-ssh-agent.sock" ]; then
+  export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
 fi
 
 # fzf
