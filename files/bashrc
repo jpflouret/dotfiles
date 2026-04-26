@@ -106,6 +106,27 @@ fi
 # These have to come before lesspipe below
 export LESS='-SRXF'
 
+# Colorize man pages: set LESS_TERMCAP_* so `less` renders bold/underline/
+# standout in color. Guarded on terminal color support.
+if command -v tput &>/dev/null && [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
+  export LESS_TERMCAP_mb=$'\e[1;31m'      # blink     -> bold red
+  export LESS_TERMCAP_md=$'\e[1;31m'      # bold      -> bold red
+  export LESS_TERMCAP_me=$'\e[0m'         # end bold/blink
+  export LESS_TERMCAP_so=$'\e[1;33;44m'   # standout  -> bold yellow on blue
+  export LESS_TERMCAP_se=$'\e[0m'         # end standout
+  export LESS_TERMCAP_us=$'\e[4;1;32m'    # underline -> underline bold green
+  export LESS_TERMCAP_ue=$'\e[0m'         # end underline
+  export LESS_TERMCAP_mr=$'\e[7m'         # reverse
+  export LESS_TERMCAP_mh=$'\e[2m'         # dim
+  # Force groff (where present) to emit termcap formatting rather than raw SGR
+  # so the vars above are honored. No effect on mandoc-based systems.
+  export GROFF_NO_SGR=1
+fi
+
+# Replace `man`'s verbose "Manual page X line N (press h for help...)" footer
+# with `less`'s default colon prompt. Honored by man-db and macOS/BSD man.
+export MANLESS=''
+
 export PYGMENTIZE_STYLE='monokai'
 
 # use lesspipe if available, fall back to lessfilter directly
